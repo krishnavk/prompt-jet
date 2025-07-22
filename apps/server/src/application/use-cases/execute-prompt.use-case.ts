@@ -11,7 +11,8 @@ export class ExecutePromptUseCase {
 
   async execute(
     promptContent: string,
-    selectedProviders: { provider: string; model: string }[]
+    selectedProviders: { provider: string; model: string }[],
+    config?: { openaiApiKey?: string; lmStudioUrl?: string }
   ): Promise<{ promptId: string; results: ExecutionResult[] }> {
     const promptId = this.generateId();
     const prompt = new Prompt(promptId, promptContent, new Date());
@@ -21,7 +22,7 @@ export class ExecutePromptUseCase {
       const startTime = Date.now();
       
       try {
-        const response = await client.executePrompt(promptContent, model);
+        const response = await client.executePrompt(promptContent, model, config);
         
         return new ExecutionResult(
           this.generateId(),

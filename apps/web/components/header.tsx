@@ -1,6 +1,7 @@
 "use client"
 
 import { ThemeToggle } from '@/components/theme-toggle'
+import { SettingsButton } from '@/components/settings-button'
 
 export function Header() {
   return (
@@ -10,7 +11,10 @@ export function Header() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Prompt Jet 🚀</h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <SettingsButton />
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </header>

@@ -8,7 +8,7 @@ export class PromptController {
 
   @Post('execute')
   async executePrompt(@Body() dto: ExecutePromptDto) {
-    return this.executePromptUseCase.execute(dto.prompt, dto.providers);
+    return this.executePromptUseCase.execute(dto.prompt, dto.providers, dto.config);
   }
 
   @Get('models')

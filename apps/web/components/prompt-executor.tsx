@@ -7,6 +7,7 @@ import { Textarea } from "./ui/textarea";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
 import { Loader2, Play, Clock, Zap, DollarSign, Copy, Minimize2, Maximize2 } from "lucide-react";
+import { useApiConfig } from "@/lib/api-config";
 
 interface Provider {
   provider: string;
@@ -40,6 +41,7 @@ export function PromptExecutor() {
   const [results, setResults] = useState<ExecutionResult[]>([]);
   const [isExecuting, setIsExecuting] = useState(false);
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+  const { openaiApiKey, lmStudioUrl, isConfigured } = useApiConfig();
 
   const toggleCardExpansion = (cardId: string) => {
     setExpandedCards(prev => {
@@ -81,6 +83,10 @@ export function PromptExecutor() {
               provider: p.provider,
               model: p.model,
             })),
+            config: {
+              openaiApiKey,
+              lmStudioUrl,
+            },
           }),
         }
       );
@@ -112,38 +118,66 @@ export function PromptExecutor() {
         <div className="space-y-2">
           <label className="text-sm font-medium">Select LLM Providers:</label>
           <div className="flex flex-wrap gap-2">
-            {AVAILABLE_PROVIDERS.map((provider) => (
-              <label
-                key={`${provider.provider}-${provider.model}`}
-                className="flex items-center space-x-2"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedProviders.some(
-                    (p) =>
-                      p.provider === provider.provider &&
-                      p.model === provider.model
+            {AVAILABLE_PROVIDERS.map((provider) => {
+              const isAvailable =
+                (provider.provider === "openrouter" && isConfigured.openai) ||
+                (provider.provider === "lmstudio" && isConfigured.lmstudio);
+              
+              return (
+                <label
+                  key={`${provider.provider}-${provider.model}`}
+                  className={`flex items-center space-x-2 ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <input
+                    type="checkbox"
+                    disabled={!isAvailable}
+                    checked={selectedProviders.some(
+                      (p) =>
+                        p.provider === provider.provider &&
+                        p.model === provider.model
+                    )}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedProviders([...selectedProviders, provider]);
+                      } else {
+                        setSelectedProviders(
+                          selectedProviders.filter(
+                            (p) =>
+                              !(
+                                p.provider === provider.provider &&
+                                p.model === provider.model
+                              )
+                          )
+                        );
+                      }
+                    }}
+                  />
+                  <span className="text-sm">{provider.name}</span>
+                  {!isAvailable && (
+                    <span className="text-xs text-red-500">(Not configured)</span>
                   )}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedProviders([...selectedProviders, provider]);
-                    } else {
-                      setSelectedProviders(
-                        selectedProviders.filter(
-                          (p) =>
-                            !(
-                              p.provider === provider.provider &&
-                              p.model === provider.model
-                            )
-                        )
-                      );
-                    }
-                  }}
-                />
-                <span className="text-sm">{provider.name}</span>
-              </label>
-            ))}
+                </label>
+              );
+            })}
           </div>
+          {(!isConfigured.openai || !isConfigured.lmstudio) && (
+            <p className="text-sm text-muted-foreground">
+              Some providers require configuration.{" "}
+              <button
+                type="button"
+                className="text-primary underline"
+                onClick={() => {
+                  // Find the settings button and click it
+                  const settingsButton = document.querySelector('header button[title="Settings"]');
+                  if (settingsButton instanceof HTMLElement) {
+                    settingsButton.click();
+                  }
+                }}
+              >
+                Configure settings
+              </button>
+            </p>
+          )}
         </div>
 
         <Button

@@ -11,12 +11,13 @@ export class LmStudioClient implements LlmClient {
     this.baseUrl = this.configService.get<string>('LM_STUDIO_URL') || 'http://localhost:1234';
   }
 
-  async executePrompt(prompt: string, model: string): Promise<LlmResponse> {
+  async executePrompt(prompt: string, model: string, config?: { lmStudioUrl?: string }): Promise<LlmResponse> {
     const startTime = Date.now();
+    const baseUrl = config?.lmStudioUrl || this.baseUrl;
     
     try {
       const response = await axios.post(
-        `${this.baseUrl}/v1/chat/completions`,
+        `${baseUrl}/v1/chat/completions`,
         {
           model,
           messages: [{ role: 'user', content: prompt }],
@@ -41,9 +42,11 @@ export class LmStudioClient implements LlmClient {
     }
   }
 
-  async getAvailableModels(): Promise<string[]> {
+  async getAvailableModels(config?: { lmStudioUrl?: string }): Promise<string[]> {
+    const baseUrl = config?.lmStudioUrl || this.baseUrl;
+    
     try {
-      const response = await axios.get(`${this.baseUrl}/v1/models`);
+      const response = await axios.get(`${baseUrl}/v1/models`);
       return response.data.data.map((model: any) => model.id);
     } catch (error) {
       return ['llama-2-7b-chat']; // Fallback model

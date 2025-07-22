@@ -12,8 +12,13 @@ export class OpenRouterClient implements LlmClient {
     this.apiKey = this.configService.get<string>('OPENROUTER_API_KEY');
   }
 
-  async executePrompt(prompt: string, model: string): Promise<LlmResponse> {
+  async executePrompt(prompt: string, model: string, config?: { openaiApiKey?: string }): Promise<LlmResponse> {
     const startTime = Date.now();
+    const apiKey = config?.openaiApiKey || this.apiKey;
+    
+    if (!apiKey) {
+      throw new Error('OpenRouter API key is required');
+    }
     
     const response = await axios.post(
       `${this.baseUrl}/chat/completions`,
@@ -24,7 +29,7 @@ export class OpenRouterClient implements LlmClient {
       },
       {
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
       }

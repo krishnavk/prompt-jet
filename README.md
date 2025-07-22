@@ -13,7 +13,7 @@ A full-stack LLM prompt execution platform that allows you to run prompts across
 
 ## Tech Stack
 
-**Console (Frontend):**
+**Web (Frontend):**
 - Next.js 15 (App Router)
 - TypeScript
 - Tailwind CSS + Shadcn/ui
@@ -30,7 +30,7 @@ A full-stack LLM prompt execution platform that allows you to run prompts across
 ```
 prompt-jet/
 ├── apps/
-│   ├── console/          # Next.js frontend
+│   ├── web/              # Next.js frontend
 │   └── server/           # NestJS backend
 ├── package.json          # Root workspace config
 └── README.md
@@ -45,7 +45,7 @@ npm install
 
 2. Set up environment variables:
 ```bash
-cp apps/console/.env.example apps/console/.env.local
+cp apps/web/.env.example apps/web/.env.local
 cp apps/server/.env.example apps/server/.env
 ```
 
@@ -54,9 +54,9 @@ cp apps/server/.env.example apps/server/.env
 npm run dev
 ```
 
-Console: http://localhost:3000
+Web: http://localhost:3000
 Server: http://localhost:3001
 
 ## Environment Variables
 
-See `.env.example` files in apps/console and apps/server directories.
+See `.env.example` files in apps/web and apps/server directories.

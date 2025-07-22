@@ -1,4 +1,4 @@
-import { IsString, IsArray, ValidateNested } from 'class-validator';
+import { IsString, IsArray, ValidateNested, IsOptional, IsObject } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class ProviderDto {
@@ -9,6 +9,16 @@ class ProviderDto {
   model: string;
 }
 
+class ConfigDto {
+  @IsOptional()
+  @IsString()
+  openaiApiKey?: string;
+
+  @IsOptional()
+  @IsString()
+  lmStudioUrl?: string;
+}
+
 export class ExecutePromptDto {
   @IsString()
   prompt: string;
@@ -17,4 +27,10 @@ export class ExecutePromptDto {
   @ValidateNested({ each: true })
   @Type(() => ProviderDto)
   providers: ProviderDto[];
+
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ConfigDto)
+  config?: ConfigDto;
 }

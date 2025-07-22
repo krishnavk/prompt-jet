@@ -6,6 +6,6 @@ export interface LlmResponse {
 }
 
 export interface LlmClient {
-  executePrompt(prompt: string, model: string): Promise<LlmResponse>;
-  getAvailableModels(): Promise<string[]>;
+  executePrompt(prompt: string, model: string, config?: any): Promise<LlmResponse>;
+  getAvailableModels(config?: any): Promise<string[]>;
 }
