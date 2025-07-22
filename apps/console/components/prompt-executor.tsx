@@ -6,7 +6,7 @@ import { Card, CardContent } from "./ui/card";
 import { Textarea } from "./ui/textarea";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
-import { Loader2, Play, Clock, Zap, DollarSign } from "lucide-react";
+import { Loader2, Play, Clock, Zap, DollarSign, Copy, Minimize2, Maximize2 } from "lucide-react";
 
 interface Provider {
   provider: string;
@@ -39,6 +39,29 @@ export function PromptExecutor() {
   const [selectedProviders, setSelectedProviders] = useState<Provider[]>([]);
   const [results, setResults] = useState<ExecutionResult[]>([]);
   const [isExecuting, setIsExecuting] = useState(false);
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+
+  const toggleCardExpansion = (cardId: string) => {
+    setExpandedCards(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(cardId)) {
+        newSet.delete(cardId);
+      } else {
+        newSet.add(cardId);
+      }
+      return newSet;
+    });
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert("Content copied to clipboard!");
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+      alert("Failed to copy content");
+    }
+  };
 
   const executePrompt = async () => {
     if (!prompt.trim() || selectedProviders.length === 0) return;
@@ -145,43 +168,96 @@ export function PromptExecutor() {
       </div>
 
       {results.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {results.map((result) => (
-            <Card key={result.id}>
-              <CardContent className="p-4">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold">{result.model}</h3>
-                    <span className="text-xs text-muted-foreground">
-                      {result.provider}
-                    </span>
-                  </div>
+        <>
+          {results.some(result => expandedCards.has(result.id)) && (
+            <div
+              className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
+              onClick={() => setExpandedCards(new Set())}
+            />
+          )}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {results.map((result) => {
+              const isExpanded = expandedCards.has(result.id);
+              return (
+                <div key={result.id} className={isExpanded ? 'md:col-span-2 lg:col-span-3' : ''}>
+                  <Card
+                    className={`transition-all duration-300 ease-in-out ${
+                      isExpanded
+                        ? 'fixed inset-4 z-50 flex flex-col bg-background'
+                        : 'cursor-pointer hover:shadow-lg'
+                    }`}
+                    onClick={() => !isExpanded && toggleCardExpansion(result.id)}
+                  >
+                    <CardContent className={`p-4 ${isExpanded ? 'flex-1 flex flex-col' : ''}`}>
+                      <div className="space-y-3 flex-1 flex flex-col">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold">{result.model}</h3>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">
+                              {result.provider}
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                copyToClipboard(result.response);
+                              }}
+                              className="p-1 hover:bg-gray-100 rounded transition-colors"
+                              title="Copy content"
+                            >
+                              <Copy className="h-4 w-4 text-gray-600" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleCardExpansion(result.id);
+                              }}
+                              className="p-1 hover:bg-gray-100 rounded transition-colors"
+                              title={isExpanded ? "Minimize" : "Expand"}
+                            >
+                              {isExpanded ? (
+                                <Minimize2 className="h-4 w-4 text-gray-600" />
+                              ) : (
+                                <Maximize2 className="h-4 w-4 text-gray-600" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
 
-                  <div className="text-sm bg-muted p-3 rounded max-h-40 overflow-y-auto">
-                    {result.response}
-                  </div>
+                        <div
+                          className={`text-sm bg-muted p-3 rounded overflow-y-auto transition-all duration-300 ${
+                            isExpanded
+                              ? 'flex-1 min-h-0'
+                              : 'max-h-40'
+                          }`}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <pre className="whitespace-pre-wrap font-sans">{result.response}</pre>
+                        </div>
 
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {result.executionTimeMs}ms
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Zap className="h-3 w-3" />
-                      {result.tokensUsed} tokens
-                    </div>
-                    {result.cost && (
-                      <div className="flex items-center gap-1">
-                        <DollarSign className="h-3 w-3" />$
-                        {result.cost.toFixed(4)}
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {result.executionTimeMs}ms
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Zap className="h-3 w-3" />
+                            {result.tokensUsed} tokens
+                          </div>
+                          {result.cost && (
+                            <div className="flex items-center gap-1">
+                              <DollarSign className="h-3 w-3" />$
+                              {result.cost.toFixed(4)}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    )}
-                  </div>
+                    </CardContent>
+                  </Card>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              );
+            })}
+          </div>
+        </>
       )}
     </div>
   );
