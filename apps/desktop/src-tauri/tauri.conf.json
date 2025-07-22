@@ -1,0 +1,87 @@
+{
+  "build": {
+    "beforeDevCommand": "cd ../.. && npm run dev:web",
+    "beforeBuildCommand": "cd ../.. && npm run build:web",
+    "devPath": "http://localhost:3000",
+    "distDir": "../../web/out",
+    "withGlobalTauri": false
+  },
+  "package": {
+    "productName": "Prompt Jet Desktop",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "window": {
+        "all": false,
+        "close": true,
+        "hide": true,
+        "show": true,
+        "maximize": true,
+        "minimize": true,
+        "unmaximize": true,
+        "unminimize": true,
+        "startDragging": true
+      },
+      "http": {
+        "all": true,
+        "request": true
+      },
+      "notification": {
+        "all": true
+      },
+      "dialog": {
+        "all": false,
+        "open": true,
+        "save": true
+      },
+      "fs": {
+        "all": false,
+        "readFile": true,
+        "writeFile": true,
+        "readDir": true,
+        "copyFile": true,
+        "createDir": true,
+        "removeDir": true,
+        "removeFile": true,
+        "renameFile": true,
+        "exists": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "com.promptjet.desktop",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "resources": [],
+      "category": "DeveloperTool",
+      "shortDescription": "Desktop LLM prompt execution platform",
+      "longDescription": "A desktop application for executing and managing LLM prompts with support for multiple providers and models"
+    },
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "title": "Prompt Jet",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600
+      }
+    ]
+  }
+}

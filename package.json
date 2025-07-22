@@ -5,18 +5,22 @@
   "private": true,
   "workspaces": [
     "apps/web",
-    "apps/server"
+    "apps/server",
+    "apps/desktop"
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev:web\" \"npm run dev:server\"",
     "dev:web": "cd apps/web && npm run dev",
     "dev:server": "cd apps/server && npm run start:dev",
+    "dev:desktop": "concurrently \"npm run dev:server\" \"npm run dev:desktop-app\"",
+    "dev:desktop-app": "cd apps/desktop && npm run dev",
     "build": "npm run build:web && npm run build:server",
     "build:web": "cd apps/web && npm run build",
     "build:server": "cd apps/server && npm run build",
+    "build:desktop": "cd apps/desktop && npm run build",
     "audit": "npm audit",
     "audit:fix": "npm audit fix",
-    "security:check": "npm run audit && cd apps/web && npm audit && cd ../server && npm audit"
+    "security:check": "npm run audit && cd apps/web && npm audit && cd ../server && npm audit && cd ../desktop && npm audit"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
