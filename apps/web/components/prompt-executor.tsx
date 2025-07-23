@@ -197,7 +197,7 @@ export function PromptExecutor() {
 
     // Use OpenRouter GPT-4 as the default provider for boosting
     const openRouterProvider = AVAILABLE_PROVIDERS.find(
-      (p) => p.provider === "openrouter" && p.model === "gpt-4"
+      (p) => p.provider === "openrouter" && p.model === "openai/gpt-4.1"
     );
 
     if (!openRouterProvider) {
