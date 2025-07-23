@@ -406,7 +406,7 @@ ${promptText}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-auto">
-                <div className="max-h-[50vh] overflow-y-auto overflow-x-hidden">
+                <div className="max-h-80 overflow-y-auto overflow-x-hidden">
                   <DropdownMenuLabel className="sticky top-0 bg-popover z-10">
                     LLM Providers
                   </DropdownMenuLabel>
