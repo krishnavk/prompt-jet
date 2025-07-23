@@ -44,12 +44,36 @@ const AVAILABLE_PROVIDERS: Provider[] = [
   },
 ];
 
+const BOOST_TECHNIQUES = {
+  enhance: {
+    name: "Enhance & Refine",
+    description: "Make prompts more specific and actionable",
+  },
+  chain: {
+    name: "Chain of Thought",
+    description: "Add step-by-step reasoning instructions",
+  },
+  role: {
+    name: "Role-Based",
+    description: "Add expert persona and context",
+  },
+  constraints: {
+    name: "Add Constraints",
+    description: "Add specific limitations and requirements",
+  },
+  examples: {
+    name: "Few-Shot Examples",
+    description: "Add relevant examples and patterns",
+  },
+};
+
 export function PromptExecutor() {
   const [prompt, setPrompt] = useState("");
   const [selectedProviders, setSelectedProviders] = useState<Provider[]>([]);
   const [results, setResults] = useState<ExecutionResult[]>([]);
   const [isExecuting, setIsExecuting] = useState(false);
   const [isBoosting, setIsBoosting] = useState(false);
+  const [boostTechnique, setBoostTechnique] = useState<string>("enhance");
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const { openaiApiKey, lmStudioUrl, isConfigured } = useApiConfig();
 
@@ -132,8 +156,71 @@ export function PromptExecutor() {
       return;
     }
 
-    // Create the enhanced prompt using the template
-    const enhancedPrompt = `You are a professional prompt engineer specializing in crafting precise, effective prompts.
+    const getBoostTemplate = (technique: string, promptText: string) => {
+      switch (technique) {
+        case "chain":
+          return `You are an expert at creating chain-of-thought prompts. Transform the following prompt to include step-by-step reasoning instructions.
+
+**Instructions:**
+- Add explicit reasoning steps
+- Include "Let's think step by step" or similar phrasing
+- Break complex tasks into clear sequential steps
+- Ensure each step builds logically on the previous
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Transform this into a chain-of-thought prompt:`;
+
+        case "role":
+          return `You are a professional prompt engineer specializing in role-based prompting. Enhance the following prompt by adding expert persona and domain context.
+
+**Instructions:**
+- Add a clear expert role/persona
+- Include relevant domain expertise
+- Specify the perspective or background knowledge
+- Make the role specific and actionable
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Enhance with expert role and context:`;
+
+        case "constraints":
+          return `You are a prompt engineer specializing in constraint-based prompting. Add specific limitations and requirements to make the following prompt more focused.
+
+**Instructions:**
+- Add clear constraints and boundaries
+- Include specific format requirements
+- Add word/length limits if appropriate
+- Specify what to exclude or avoid
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Add focused constraints and requirements:`;
+
+        case "examples":
+          return `You are a prompt engineer specializing in few-shot learning. Enhance the following prompt with relevant examples and patterns.
+
+**Instructions:**
+- Add 2-3 relevant examples
+- Include input-output patterns
+- Show the desired format and style
+- Make examples illustrative and diverse
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Enhance with few-shot examples:`;
+
+        case "enhance":
+        default:
+          return `You are a professional prompt engineer specializing in crafting precise, effective prompts.
 Your task is to enhance prompts by making them more specific, actionable, and effective.
 
 **Formatting Requirements:**
@@ -167,8 +254,11 @@ Do not include any explanations, metadata, or wrapper tags.
 <original_prompt>
 ${promptText}
 </original_prompt>`;
+      }
+    };
 
-    // setPrompt(enhancedPrompt);
+    // Get the appropriate template based on selected technique
+    const enhancedPrompt = getBoostTemplate(boostTechnique, promptText);
     setSelectedProviders([openRouterProvider]);
 
     try {
@@ -291,44 +381,71 @@ ${promptText}
           )}
         </div>
 
-        <div className="flex gap-2">
-          <Button
-            onClick={() => boostPrompt()}
-            disabled={!prompt.trim() || !isConfigured.openai || isExecuting}
-            variant="default"
-            className="flex-1"
-          >
-            {isBoosting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Boosting...
-              </>
-            ) : (
-              <>
-                <Zap className="mr-2 h-4 w-4" />
-                Boost Prompt
-              </>
-            )}
-          </Button>
-          <Button
-            onClick={executePrompt}
-            disabled={
-              !prompt.trim() || selectedProviders.length === 0 || isExecuting
+        <div className="space-y-4">
+          <div className="flex gap-2">
+            <div className="flex-1 flex gap-2">
+              <select
+                value={boostTechnique}
+                onChange={(e) => setBoostTechnique(e.target.value)}
+                className="flex-[2] p-2 border rounded-lg focus:outline-none focus:ring-2"
+              >
+                {Object.entries(BOOST_TECHNIQUES).map(([key, technique]) => (
+                  <option key={key} value={key}>
+                    {technique.name}
+                  </option>
+                ))}
+              </select>
+              <Button
+                onClick={() => boostPrompt()}
+                disabled={!prompt.trim() || !isConfigured.openai || isExecuting}
+                variant="default"
+                className="flex-1"
+              >
+                {isBoosting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Boosting...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="mr-2 h-4 w-4" />
+                    Boost Prompt
+                  </>
+                )}
+              </Button>
+            </div>
+            <Button
+              onClick={executePrompt}
+              disabled={
+                !prompt.trim() || selectedProviders.length === 0 || isExecuting
+              }
+              className="flex-1"
+            >
+              {isExecuting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Executing...
+                </>
+              ) : (
+                <>
+                  <Play className="mr-2 h-4 w-4" />
+                  Run Prompt
+                </>
+              )}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Selected technique:{" "}
+            {
+              BOOST_TECHNIQUES[boostTechnique as keyof typeof BOOST_TECHNIQUES]
+                .name
+            }{" "}
+            -
+            {
+              BOOST_TECHNIQUES[boostTechnique as keyof typeof BOOST_TECHNIQUES]
+                .description
             }
-            className="flex-1"
-          >
-            {isExecuting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Executing...
-              </>
-            ) : (
-              <>
-                <Play className="mr-2 h-4 w-4" />
-                Run Prompt
-              </>
-            )}
-          </Button>
+          </p>
         </div>
       </div>
 
