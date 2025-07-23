@@ -7,6 +7,14 @@ import { Textarea } from "./ui/textarea";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
 import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import {
   Loader2,
   Play,
   Clock,
@@ -15,6 +23,7 @@ import {
   Copy,
   Minimize2,
   Maximize2,
+  ChevronDown,
 } from "lucide-react";
 import { useApiConfig } from "@/lib/api-config";
 
@@ -35,7 +44,7 @@ interface ExecutionResult {
 }
 
 const AVAILABLE_PROVIDERS: Provider[] = [
-  { provider: "openrouter", model: "gpt-4", name: "GPT-4 (OpenRouter)" },
+  { provider: "openrouter", model: "gpt-4", name: "GPT-4" },
   { provider: "openrouter", model: "gpt-3.5-turbo", name: "GPT-3.5 Turbo" },
   {
     provider: "lmstudio",
@@ -300,7 +309,8 @@ ${promptText}
       <div className="space-y-4">
         <div className="text-center">
           <p className="text-2xl font-bold py-6">
-            Execute prompts across multiple LLM providers and compare results
+            Enhance and execute prompts across multiple LLM providers and
+            compare results
           </p>
         </div>
         <textarea
@@ -310,55 +320,126 @@ ${promptText}
           className="w-full h-32 p-4 border rounded-lg resize-none focus:outline-none focus:ring-2"
         />
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Select LLM Providers:</label>
-          <div className="flex flex-wrap gap-2">
-            {AVAILABLE_PROVIDERS.map((provider) => {
-              const isAvailable =
-                (provider.provider === "openrouter" && isConfigured.openai) ||
-                (provider.provider === "lmstudio" && isConfigured.lmstudio);
+        <div className="space-y-4">
+          <div className="flex gap-2">
+            <div className="flex-1 flex gap-2">
+              <select
+                value={boostTechnique}
+                onChange={(e) => setBoostTechnique(e.target.value)}
+                className="w-48 p-2 border rounded-lg focus:outline-none focus:ring-2 text-sm"
+              >
+                {Object.entries(BOOST_TECHNIQUES).map(([key, technique]) => (
+                  <option key={key} value={key}>
+                    {technique.name}
+                  </option>
+                ))}
+              </select>
+              <Button
+                onClick={() => boostPrompt()}
+                disabled={!prompt.trim() || !isConfigured.openai || isExecuting}
+                variant="default"
+                className="w-36"
+              >
+                {isBoosting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Boosting...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="mr-2 h-4 w-4" />
+                    Boost
+                  </>
+                )}
+              </Button>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-56 justify-between">
+                  {selectedProviders.length === 0
+                    ? "Select Providers"
+                    : `${selectedProviders.length} provider${
+                        selectedProviders.length > 1 ? "s" : ""
+                      } selected`}
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>LLM Providers</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {AVAILABLE_PROVIDERS.map((provider) => {
+                  const isAvailable =
+                    (provider.provider === "openrouter" &&
+                      isConfigured.openai) ||
+                    (provider.provider === "lmstudio" && isConfigured.lmstudio);
 
-              return (
-                <label
-                  key={`${provider.provider}-${provider.model}`}
-                  className={`flex items-center space-x-2 ${
-                    !isAvailable ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    disabled={!isAvailable}
-                    checked={selectedProviders.some(
-                      (p) =>
-                        p.provider === provider.provider &&
-                        p.model === provider.model
-                    )}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedProviders([...selectedProviders, provider]);
-                      } else {
-                        setSelectedProviders(
-                          selectedProviders.filter(
-                            (p) =>
-                              !(
-                                p.provider === provider.provider &&
-                                p.model === provider.model
-                              )
-                          )
-                        );
-                      }
-                    }}
-                  />
-                  <span className="text-sm">{provider.name}</span>
-                  {!isAvailable && (
-                    <span className="text-xs text-red-500">
-                      (Not configured)
-                    </span>
-                  )}
-                </label>
-              );
-            })}
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={`${provider.provider}-${provider.model}`}
+                      checked={selectedProviders.some(
+                        (p) =>
+                          p.provider === provider.provider &&
+                          p.model === provider.model
+                      )}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedProviders([
+                            ...selectedProviders,
+                            provider,
+                          ]);
+                        } else {
+                          setSelectedProviders(
+                            selectedProviders.filter(
+                              (p) =>
+                                !(
+                                  p.provider === provider.provider &&
+                                  p.model === provider.model
+                                )
+                            )
+                          );
+                        }
+                      }}
+                      disabled={!isAvailable}
+                      className={!isAvailable ? "opacity-50" : ""}
+                    >
+                      {provider.name}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button
+              onClick={executePrompt}
+              disabled={
+                !prompt.trim() || selectedProviders.length === 0 || isExecuting
+              }
+              className="w-36"
+            >
+              {isExecuting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Running...
+                </>
+              ) : (
+                <>
+                  <Play className="mr-2 h-4 w-4" />
+                  Run
+                </>
+              )}
+            </Button>
           </div>
+          <p className="text-xs text-muted-foreground">
+            Selected technique:{" "}
+            {
+              BOOST_TECHNIQUES[boostTechnique as keyof typeof BOOST_TECHNIQUES]
+                .name
+            }{" "}
+            -
+            {
+              BOOST_TECHNIQUES[boostTechnique as keyof typeof BOOST_TECHNIQUES]
+                .description
+            }
+          </p>
           {(!isConfigured.openai || !isConfigured.lmstudio) && (
             <p className="text-sm text-muted-foreground">
               Some providers require configuration.{" "}
@@ -379,73 +460,6 @@ ${promptText}
               </button>
             </p>
           )}
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex gap-2">
-            <div className="flex-1 flex gap-2">
-              <select
-                value={boostTechnique}
-                onChange={(e) => setBoostTechnique(e.target.value)}
-                className="flex-[2] p-2 border rounded-lg focus:outline-none focus:ring-2"
-              >
-                {Object.entries(BOOST_TECHNIQUES).map(([key, technique]) => (
-                  <option key={key} value={key}>
-                    {technique.name}
-                  </option>
-                ))}
-              </select>
-              <Button
-                onClick={() => boostPrompt()}
-                disabled={!prompt.trim() || !isConfigured.openai || isExecuting}
-                variant="default"
-                className="flex-1"
-              >
-                {isBoosting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Boosting...
-                  </>
-                ) : (
-                  <>
-                    <Zap className="mr-2 h-4 w-4" />
-                    Boost Prompt
-                  </>
-                )}
-              </Button>
-            </div>
-            <Button
-              onClick={executePrompt}
-              disabled={
-                !prompt.trim() || selectedProviders.length === 0 || isExecuting
-              }
-              className="flex-1"
-            >
-              {isExecuting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Executing...
-                </>
-              ) : (
-                <>
-                  <Play className="mr-2 h-4 w-4" />
-                  Run Prompt
-                </>
-              )}
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Selected technique:{" "}
-            {
-              BOOST_TECHNIQUES[boostTechnique as keyof typeof BOOST_TECHNIQUES]
-                .name
-            }{" "}
-            -
-            {
-              BOOST_TECHNIQUES[boostTechnique as keyof typeof BOOST_TECHNIQUES]
-                .description
-            }
-          </p>
         </div>
       </div>
 
@@ -516,7 +530,9 @@ ${promptText}
 
                         <div
                           className={`text-sm bg-muted p-3 rounded overflow-y-auto transition-all duration-300 ${
-                            isExpanded ? "flex-1 min-h-0" : "max-h-40"
+                            isExpanded
+                              ? "flex-1 min-h-0 max-h-[calc(100vh-12rem)]"
+                              : "max-h-40"
                           }`}
                           onClick={(e) => e.stopPropagation()}
                         >
