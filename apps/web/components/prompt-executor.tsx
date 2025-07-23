@@ -44,8 +44,49 @@ interface ExecutionResult {
 }
 
 const AVAILABLE_PROVIDERS: Provider[] = [
-  { provider: "openrouter", model: "gpt-4", name: "GPT-4" },
-  { provider: "openrouter", model: "gpt-3.5-turbo", name: "GPT-3.5 Turbo" },
+  { provider: "openrouter", model: "openai/gpt-4.1", name: "GPT-4.1" },
+  { provider: "openrouter", model: "openai/gpt-4o", name: "GPT-4o" },
+  { provider: "openrouter", model: "openai/gpt-4-turbo", name: "GPT-4 Turbo" },
+  {
+    provider: "openrouter",
+    model: "google/gemini-1.5-flash",
+    name: "Gemini 1.5 Flash",
+  },
+  {
+    provider: "openrouter",
+    model: "google/gemini-1.5-pro",
+    name: "Gemini 1.5 Pro",
+  },
+  {
+    provider: "openrouter",
+    model: "anthropic/claude-3-opus",
+    name: "Claude 3 Opus",
+  },
+  {
+    provider: "openrouter",
+    model: "anthropic/claude-3-sonnet",
+    name: "Claude 3 Sonnet",
+  },
+  {
+    provider: "openrouter",
+    model: "meta-llama/llama-3-70b-instruct",
+    name: "Llama 3 70B Instruct",
+  },
+  {
+    provider: "openrouter",
+    model: "meta-llama/llama-3-8b-instruct",
+    name: "Llama 3 8B Instruct",
+  },
+  {
+    provider: "openrouter",
+    model: "mistralai/mistral-large",
+    name: "Mistral Large",
+  },
+  {
+    provider: "openrouter",
+    model: "mistralai/mistral-medium",
+    name: "Mistral Medium",
+  },
   {
     provider: "lmstudio",
     model: "llama-2-7b-chat",
@@ -364,48 +405,53 @@ ${promptText}
                   <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>LLM Providers</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {AVAILABLE_PROVIDERS.map((provider) => {
-                  const isAvailable =
-                    (provider.provider === "openrouter" &&
-                      isConfigured.openai) ||
-                    (provider.provider === "lmstudio" && isConfigured.lmstudio);
+              <DropdownMenuContent className="w-auto">
+                <div className="max-h-[50vh] overflow-y-auto overflow-x-hidden">
+                  <DropdownMenuLabel className="sticky top-0 bg-popover z-10">
+                    LLM Providers
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="sticky bg-popover z-10" />
+                  {AVAILABLE_PROVIDERS.map((provider) => {
+                    const isAvailable =
+                      (provider.provider === "openrouter" &&
+                        isConfigured.openai) ||
+                      (provider.provider === "lmstudio" &&
+                        isConfigured.lmstudio);
 
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={`${provider.provider}-${provider.model}`}
-                      checked={selectedProviders.some(
-                        (p) =>
-                          p.provider === provider.provider &&
-                          p.model === provider.model
-                      )}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedProviders([
-                            ...selectedProviders,
-                            provider,
-                          ]);
-                        } else {
-                          setSelectedProviders(
-                            selectedProviders.filter(
-                              (p) =>
-                                !(
-                                  p.provider === provider.provider &&
-                                  p.model === provider.model
-                                )
-                            )
-                          );
-                        }
-                      }}
-                      disabled={!isAvailable}
-                      className={!isAvailable ? "opacity-50" : ""}
-                    >
-                      {provider.name}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={`${provider.provider}-${provider.model}`}
+                        checked={selectedProviders.some(
+                          (p) =>
+                            p.provider === provider.provider &&
+                            p.model === provider.model
+                        )}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedProviders([
+                              ...selectedProviders,
+                              provider,
+                            ]);
+                          } else {
+                            setSelectedProviders(
+                              selectedProviders.filter(
+                                (p) =>
+                                  !(
+                                    p.provider === provider.provider &&
+                                    p.model === provider.model
+                                  )
+                              )
+                            );
+                          }
+                        }}
+                        disabled={!isAvailable}
+                        className={!isAvailable ? "opacity-50" : ""}
+                      >
+                        {provider.name}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
             <Button
