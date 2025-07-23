@@ -364,17 +364,31 @@ ${promptText}
         <div className="space-y-4">
           <div className="flex gap-2">
             <div className="flex-1 flex gap-2">
-              <select
-                value={boostTechnique}
-                onChange={(e) => setBoostTechnique(e.target.value)}
-                className="w-48 p-2 border rounded-lg focus:outline-none focus:ring-2 text-sm"
-              >
-                {Object.entries(BOOST_TECHNIQUES).map(([key, technique]) => (
-                  <option key={key} value={key}>
-                    {technique.name}
-                  </option>
-                ))}
-              </select>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="w-48 justify-between">
+                    {
+                      BOOST_TECHNIQUES[
+                        boostTechnique as keyof typeof BOOST_TECHNIQUES
+                      ].name
+                    }
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-48">
+                  <DropdownMenuLabel>Boost Techniques</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {Object.entries(BOOST_TECHNIQUES).map(([key, technique]) => (
+                    <DropdownMenuCheckboxItem
+                      key={key}
+                      checked={boostTechnique === key}
+                      onCheckedChange={() => setBoostTechnique(key)}
+                    >
+                      {technique.name}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button
                 onClick={() => boostPrompt()}
                 disabled={!prompt.trim() || !isConfigured.openai || isExecuting}
