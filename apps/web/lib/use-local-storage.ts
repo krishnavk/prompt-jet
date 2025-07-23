@@ -17,6 +17,34 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     }
   });
 
+  // Listen for storage changes (from other tabs/components)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === key && e.newValue !== null) {
+        try {
+          setStoredValue(JSON.parse(e.newValue));
+        } catch (error) {
+          console.error(`Error parsing storage event for key "${key}":`, error);
+        }
+      }
+    };
+
+    // Custom event for same-tab updates
+    const handleCustomStorageChange = (e: CustomEvent) => {
+      if (e.detail.key === key) {
+        setStoredValue(e.detail.value);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('localStorageChange', handleCustomStorageChange as EventListener);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('localStorageChange', handleCustomStorageChange as EventListener);
+    };
+  }, [key]);
+
   // Return a wrapped version of useState's setter function that persists the new value to localStorage
   const setValue = (value: T | ((val: T) => T)) => {
     try {
@@ -26,6 +54,11 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
       // Save to local storage
       if (typeof window !== "undefined") {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        
+        // Dispatch custom event for same-tab updates
+        window.dispatchEvent(new CustomEvent('localStorageChange', {
+          detail: { key, value: valueToStore }
+        }));
       }
     } catch (error) {
       console.error(`Error setting localStorage key "${key}":`, error);
