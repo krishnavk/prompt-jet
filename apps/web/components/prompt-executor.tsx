@@ -115,6 +115,50 @@ const BOOST_TECHNIQUES = {
     name: "Few-Shot Examples",
     description: "Add relevant examples and patterns",
   },
+  meta: {
+    name: "Meta Prompting",
+    description: "Use prompts about prompts to improve quality",
+  },
+  contextual: {
+    name: "Contextual Prompting",
+    description: "Add rich context and background information",
+  },
+  tot: {
+    name: "Tree of Thoughts",
+    description: "Explore multiple reasoning paths simultaneously",
+  },
+  generated: {
+    name: "Generated Knowledge",
+    description: "Generate relevant knowledge before answering",
+  },
+  chaining: {
+    name: "Prompt Chaining",
+    description: "Break complex tasks into sequential prompts",
+  },
+  reflexion: {
+    name: "Reflexion",
+    description: "Add self-reflection and iterative improvement",
+  },
+  constitutional: {
+    name: "Constitutional AI",
+    description: "Add ethical guidelines and safety principles",
+  },
+  ensemble: {
+    name: "Ensemble Methods",
+    description: "Combine multiple expert perspectives",
+  },
+  stepback: {
+    name: "Step-Back Prompting",
+    description: "First ask broader questions, then focus",
+  },
+  react: {
+    name: "ReAct",
+    description: "Combine reasoning with action execution",
+  },
+  critique: {
+    name: "Self-Critique",
+    description: "Generate, critique, and refine responses",
+  },
 };
 
 export function PromptExecutor() {
@@ -273,6 +317,192 @@ ${promptText}
 
 Enhance with few-shot examples:`;
 
+        case "meta":
+          return `You are a meta-prompting expert who creates prompts that improve other prompts. Transform the following into a meta-prompt that guides the AI to generate better responses.
+
+**Instructions:**
+- Add self-referential instructions about prompt quality
+- Include evaluation criteria for responses
+- Add iterative improvement suggestions
+- Include reflection on the prompt's effectiveness
+- Add instructions for the AI to critique and refine its own approach
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Transform this into a meta-prompt that improves prompt quality:`;
+
+        case "contextual":
+          return `You are a contextual prompting expert who enhances prompts with rich background information and situational awareness.
+
+**Instructions:**
+- Add comprehensive background context
+- Include relevant domain knowledge and facts
+- Specify the situation, audience, and use case
+- Add historical context or precedents
+- Include environmental or situational factors
+- Make the context actionable and relevant
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Enhance with rich contextual information:`;
+
+        case "tot":
+          return `You are a Tree of Thoughts prompting expert who creates prompts that explore multiple reasoning paths simultaneously.
+
+**Instructions:**
+- Structure the prompt to explore 3-4 different approaches
+- Include evaluation criteria for each path
+- Add comparison and synthesis instructions
+- Include backtracking and refinement steps
+- Add voting or selection mechanisms for best solutions
+- Ensure systematic exploration of the solution space
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Transform this into a Tree of Thoughts prompt:`;
+
+        case "generated":
+          return `You are an expert in generated knowledge prompting who enhances prompts by first generating relevant background knowledge.
+
+**Instructions:**
+- Add a knowledge generation phase before the main task
+- Include instructions to retrieve and synthesize relevant facts
+- Add verification steps for generated knowledge
+- Include integration of generated knowledge into the final response
+- Add confidence assessment for the generated information
+- Ensure the knowledge directly supports the main task
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Enhance with generated knowledge approach:`;
+
+        case "chaining":
+          return `You are a prompt chaining expert who breaks complex tasks into sequential, dependent prompts.
+
+**Instructions:**
+- Decompose the task into 3-5 sequential steps
+- Make each step's output the input for the next
+- Add specific instructions for each chain link
+- Include validation and checkpoint instructions
+- Add error handling and refinement steps
+- Ensure clear handoffs between chain elements
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Transform this into a prompt chaining sequence:`;
+
+        case "reflexion":
+          return `You are a Reflexion prompting expert who creates prompts with built-in self-reflection and iterative improvement mechanisms.
+
+**Instructions:**
+- Add self-evaluation and reflection steps
+- Include iterative refinement instructions
+- Add memory of previous attempts and lessons learned
+- Include meta-cognitive analysis of the reasoning process
+- Add improvement suggestions based on outcomes
+- Ensure continuous learning and adaptation
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Transform this into a Reflexion prompt:`;
+
+        case "constitutional":
+          return `You are a Constitutional AI expert who enhances prompts with ethical guidelines and safety principles.
+
+**Instructions:**
+- Add clear ethical principles and guidelines
+- Include safety considerations and harm prevention
+- Add constitutional rules for behavior
+- Include transparency and accountability measures
+- Add bias detection and mitigation instructions
+- Ensure alignment with human values and safety
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Enhance with constitutional AI principles:`;
+
+        case "ensemble":
+          return `You are an ensemble prompting expert who creates prompts that combine multiple expert perspectives and approaches.
+
+**Instructions:**
+- Generate responses from 3-5 different expert perspectives
+- Include diverse viewpoints and methodologies
+- Add synthesis and consensus-building instructions
+- Include voting or weighting mechanisms
+- Add conflict resolution for contradictory advice
+- Ensure comprehensive coverage of the problem space
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Transform this into an ensemble prompt:`;
+
+        case "stepback":
+          return `You are a step-back prompting expert who creates prompts that first ask broader questions before focusing on specifics.
+
+**Instructions:**
+- First identify and ask broader, more fundamental questions
+- Extract high-level concepts and principles
+- Use abstract reasoning before concrete application
+- Add abstraction and generalization steps
+- Include connection to first-principles thinking
+- Ensure the step-back informs the specific solution
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Transform this into a step-back prompting approach:`;
+
+        case "react":
+          return `You are a ReAct prompting expert who creates prompts that combine reasoning with action execution.
+
+**Instructions:**
+- Structure as alternating Thought/Action/Observation cycles
+- Include explicit reasoning before each action
+- Add action execution with clear expected outcomes
+- Include observation and reflection on action results
+- Add iterative planning and execution loops
+- Ensure tight integration of thinking and doing
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Transform this into a ReAct prompt:`;
+
+        case "critique":
+          return `You are a self-critique prompting expert who creates prompts that generate, critique, and refine responses.
+
+**Instructions:**
+- First generate an initial response
+- Then provide detailed critique and analysis
+- Include specific improvement suggestions
+- Add refinement and revision steps
+- Include quality assessment criteria
+- Ensure iterative improvement through critique
+
+<original_prompt>
+${promptText}
+</original_prompt>
+
+Transform this into a self-critique prompt:`;
+
         case "enhance":
         default:
           return `You are a professional prompt engineer specializing in crafting precise, effective prompts.
@@ -389,11 +619,26 @@ ${promptText}
         />
 
         <div className="space-y-4">
+          <p className="text-xs text-muted-foreground">
+            Selected technique:{" "}
+            {
+              BOOST_TECHNIQUES[boostTechnique as keyof typeof BOOST_TECHNIQUES]
+                .name
+            }{" "}
+            -
+            {
+              BOOST_TECHNIQUES[boostTechnique as keyof typeof BOOST_TECHNIQUES]
+                .description
+            }
+          </p>
           <div className="flex gap-2">
             <div className="flex-1 flex gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-48 justify-between">
+                  <Button
+                    variant="outline"
+                    className="w-auto min-w-56 justify-between"
+                  >
                     {
                       BOOST_TECHNIQUES[
                         boostTechnique as keyof typeof BOOST_TECHNIQUES
@@ -402,7 +647,7 @@ ${promptText}
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-48">
+                <DropdownMenuContent className="w-auto min-w-56">
                   <DropdownMenuLabel>Boost Techniques</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {Object.entries(BOOST_TECHNIQUES).map(([key, technique]) => (
@@ -437,7 +682,10 @@ ${promptText}
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-56 justify-between">
+                <Button
+                  variant="outline"
+                  className="w-auto min-w-56 justify-between"
+                >
                   {selectedProviders.length === 0
                     ? "Select Providers"
                     : `${selectedProviders.length} provider${
@@ -446,7 +694,7 @@ ${promptText}
                   <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-auto">
+              <DropdownMenuContent className="w-auto min-w-56">
                 <div className="max-h-80 overflow-y-auto overflow-x-hidden">
                   <DropdownMenuLabel className="sticky top-0 bg-popover z-10">
                     LLM Providers
@@ -515,18 +763,6 @@ ${promptText}
               )}
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Selected technique:{" "}
-            {
-              BOOST_TECHNIQUES[boostTechnique as keyof typeof BOOST_TECHNIQUES]
-                .name
-            }{" "}
-            -
-            {
-              BOOST_TECHNIQUES[boostTechnique as keyof typeof BOOST_TECHNIQUES]
-                .description
-            }
-          </p>
           {(!isConfigured.openai || !isConfigured.lmstudio) && (
             <p className="text-sm text-muted-foreground">
               Some providers require configuration.{" "}
