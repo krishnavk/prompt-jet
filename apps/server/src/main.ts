@@ -5,11 +5,9 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
-  // Security headers
+  // Security headers - allow all origins for desktop app
   app.enableCors({
-    origin: process.env.NODE_ENV === 'production' 
-      ? ['https://your-domain.com'] 
-      : ['http://localhost:3000'],
+    origin: true, // Allow all origins for desktop app
     credentials: true,
   });
   
@@ -19,8 +17,16 @@ async function bootstrap() {
     transform: true,
   }));
   
-  const port = process.env.PORT || 3001;
-  await app.listen(port);
-  console.log(`Server running on http://localhost:${port}`);
+  // Get port from command line args or environment
+  const args = process.argv.slice(2);
+  const portArg = args.find(arg => arg === '--port');
+  const portIndex = args.indexOf('--port');
+  const port = portIndex !== -1 && portIndex + 1 < args.length
+    ? parseInt(args[portIndex + 1], 10)
+    : process.env.PORT || 3001;
+    
+  await app.listen(port, '0.0.0.0');
+  console.log(`Prompt Jet Server running on http://localhost:${port}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 }
 bootstrap();

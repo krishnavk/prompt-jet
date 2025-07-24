@@ -186,7 +186,7 @@ export function PromptExecutor() {
 
   const boostPrompt = async (inputText?: string) => {
     const promptText = inputText || prompt;
-    if (!promptText.trim() || !isConfigured.openai) return;
+    if (!promptText.trim() || !openaiApiKey) return;
 
     setIsBoosting(true);
 
