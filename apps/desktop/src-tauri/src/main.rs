@@ -6,33 +6,12 @@ use tauri::api::process::{Command as SidecarCommand, CommandEvent};
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
-            // Get the directory where the binary is located
-            let app_dir = app.path_resolver().resource_dir().unwrap();
-            let binary_path = app_dir.join("../MacOS/prompt-jet-server");
-            
-            println!("Attempting to spawn server from: {:?}", binary_path);
-            
-            // Check if file exists
-            if !binary_path.exists() {
-                println!("Binary does not exist at: {:?}", binary_path);
-                
-                // List directory contents for debugging
-                let parent_dir = binary_path.parent().unwrap();
-                if let Ok(entries) = std::fs::read_dir(parent_dir) {
-                    for entry in entries {
-                        if let Ok(entry) = entry {
-                            println!("Found file: {:?}", entry.file_name());
-                        }
-                    }
-                }
-                
-                panic!("Server binary not found");
-            }
-            
             // Configure server port - use environment variable or default
-            let port = std::env::var("PROMPT_JET_SERVER_PORT").unwrap_or_else(|_| "3001".to_string());
+            let port = std::env::var("PROMPT_JET_SERVER_PORT").unwrap_or_else(|_| "3000".to_string());
             
-            // Start the server process
+            println!("Attempting to spawn prompt-jet-server sidecar on port: {}", port);
+            
+            // Start the server process using Tauri's sidecar system
             let (mut rx, _child) = SidecarCommand::new_sidecar("prompt-jet-server")
                 .expect("failed to create sidecar command")
                 .args(&["--port", &port])
