@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import { Textarea } from "./ui/textarea";
@@ -125,7 +125,12 @@ export function PromptExecutor() {
   const [isBoosting, setIsBoosting] = useState(false);
   const [boostTechnique, setBoostTechnique] = useState<string>("enhance");
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+  const [mounted, setMounted] = useState(false);
   const { openaiApiKey, lmStudioUrl, isConfigured } = useApiConfig();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const toggleCardExpansion = (cardId: string) => {
     setExpandedCards((prev) => {
@@ -344,6 +349,28 @@ ${promptText}
       setIsBoosting(false);
     }
   };
+
+  if (!mounted) {
+    return (
+      <div className="max-w-6xl mx-auto p-6 space-y-6">
+        <div className="space-y-4">
+          <div className="text-center">
+            <p className="text-2xl font-bold py-6">
+              Enhance and execute prompts across multiple LLM providers and
+              compare results
+            </p>
+          </div>
+          <div className="w-full h-32 p-4 border rounded-lg bg-muted animate-pulse" />
+          <div className="flex gap-2">
+            <div className="w-48 h-10 bg-muted rounded animate-pulse" />
+            <div className="w-36 h-10 bg-muted rounded animate-pulse" />
+            <div className="w-56 h-10 bg-muted rounded animate-pulse" />
+            <div className="w-36 h-10 bg-muted rounded animate-pulse" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
