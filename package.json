@@ -23,6 +23,6 @@
     "security:check": "npm run audit && cd apps/web && npm audit && cd ../server && npm audit && cd ../desktop && npm audit"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^9.2.0"
   }
 }
