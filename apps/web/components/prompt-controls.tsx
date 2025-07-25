@@ -1,0 +1,75 @@
+"use client";
+
+import { BoostControls } from "./boost-controls";
+import { ExecutionControls } from "./execution-controls";
+import { Provider } from "@/lib/providers";
+import { BOOST_TECHNIQUES, BoostTechnique } from "@/lib/boost-techniques";
+
+interface PromptControlsProps {
+  // Boost controls props
+  boostTechnique: BoostTechnique;
+  setBoostTechnique: (technique: BoostTechnique) => void;
+  onBoost: () => void;
+  isBoosting: boolean;
+  isBoostDisabled: boolean;
+
+  // Execution controls props
+  selectedProviders: Provider[];
+  setSelectedProviders: (providers: Provider[]) => void;
+  onExecute: () => void;
+  isExecuting: boolean;
+  isExecuteDisabled: boolean;
+
+  // Common props
+  prompt: string;
+  availableProviders: Provider[];
+  isConfigured: {
+    openai: boolean;
+    lmstudio: boolean;
+  };
+}
+
+export function PromptControls({
+  boostTechnique,
+  setBoostTechnique,
+  onBoost,
+  isBoosting,
+  isBoostDisabled,
+  selectedProviders,
+  setSelectedProviders,
+  onExecute,
+  isExecuting,
+  isExecuteDisabled,
+  prompt,
+  availableProviders,
+  isConfigured,
+}: PromptControlsProps) {
+  return (
+    <>
+      <p className="text-xs text-muted-foreground">
+        Selected technique: {BOOST_TECHNIQUES[boostTechnique].name} -{" "}
+        {BOOST_TECHNIQUES[boostTechnique].description}
+      </p>
+      <div className="flex flex-col lg:flex-row gap-4 justify-between">
+        <BoostControls
+          boostTechnique={boostTechnique}
+          setBoostTechnique={setBoostTechnique}
+          onBoost={onBoost}
+          isBoosting={isBoosting}
+          isDisabled={isBoostDisabled}
+          prompt={prompt}
+        />
+        <ExecutionControls
+          selectedProviders={selectedProviders}
+          setSelectedProviders={setSelectedProviders}
+          onExecute={onExecute}
+          isExecuting={isExecuting}
+          isDisabled={isExecuteDisabled}
+          prompt={prompt}
+          availableProviders={availableProviders}
+          isConfigured={isConfigured}
+        />
+      </div>
+    </>
+  );
+}

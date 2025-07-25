@@ -21,25 +21,18 @@ interface SettingsDialogProps {
 
 export function SettingsDialog({ children }: SettingsDialogProps) {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [openaiApiKey, setOpenaiApiKey] = useLocalStorage<string>("openai-api-key", "");
-  const [lmStudioUrl, setLmStudioUrl] = useLocalStorage<string>("lmstudio-url", "http://localhost:1234");
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [openaiApiKey, setOpenaiApiKey] = useLocalStorage<string>(
+    "openai-api-key",
+    ""
+  );
+  const [lmStudioUrl, setLmStudioUrl] = useLocalStorage<string>(
+    "lmstudio-url",
+    "http://localhost:1234"
+  );
 
   const handleSave = () => {
     setOpen(false);
   };
-
-  if (!mounted) {
-    return children || (
-      <Button variant="outline" size="sm" data-settings-trigger>
-        <Settings className="h-4 w-4" />
-      </Button>
-    );
-  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
