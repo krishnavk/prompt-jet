@@ -33,17 +33,39 @@ export function ExecutionControls({
     <div className="flex gap-2">
       <ActionDropdown
         label="LLM Providers"
-        options={availableProviders.map((provider) => {
-          const isAvailable =
-            (provider.provider === "openrouter" && isConfigured.openai) ||
-            (provider.provider === "lmstudio" && isConfigured.lmstudio);
+        options={(() => {
+          // Group providers by category
+          const categories = new Map<string, Array<{id: string, name: string, disabled: boolean}>>();
           
-          return {
-            id: `${provider.provider}-${provider.model}`,
-            name: provider.name,
-            disabled: !isAvailable,
-          };
-        })}
+          availableProviders.forEach((provider) => {
+            const isAvailable =
+              (provider.provider === "openrouter" && isConfigured.openai) ||
+              (provider.provider === "lmstudio" && isConfigured.lmstudio);
+            
+            const option = {
+              id: `${provider.provider}-${provider.model}`,
+              name: provider.name,
+              disabled: !isAvailable,
+            };
+
+            if (!categories.has(provider.category)) {
+              categories.set(provider.category, []);
+            }
+            categories.get(provider.category)?.push(option);
+          });
+
+          // Convert map to array of grouped options
+          const groupedOptions = [];
+          for (const [category, options] of categories.entries()) {
+            groupedOptions.push({
+              type: 'header' as const,
+              label: category,
+            });
+            groupedOptions.push(...options);
+          }
+          
+          return groupedOptions;
+        })()}
         selectedIds={selectedProviders.map(
           (p) => `${p.provider}-${p.model}`
         )}
