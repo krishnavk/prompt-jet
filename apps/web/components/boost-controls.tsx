@@ -28,12 +28,19 @@ export function BoostControls({
         <div className="flex-1 flex gap-2">
           <ActionDropdown
             label="Boost Techniques"
-            options={Object.entries(BOOST_TECHNIQUES).map(
-              ([key, technique]) => ({
+            options={[
+              {
+                id: "header-techniques",
+                type: "header" as const,
+                label: "Prompting Techniques",
+                name: "Prompting Techniques",
+              },
+              ...Object.entries(BOOST_TECHNIQUES).map(([key, technique]) => ({
                 id: key,
                 name: technique.name,
-              })
-            )}
+                description: technique.description,
+              })),
+            ]}
             selectedIds={[boostTechnique]}
             onSelectionChange={(id, checked) => {
               if (checked) {
