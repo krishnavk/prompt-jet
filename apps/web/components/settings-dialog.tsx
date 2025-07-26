@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useLocalStorage } from "@/lib/use-local-storage";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 interface SettingsDialogProps {
   children?: React.ReactNode;

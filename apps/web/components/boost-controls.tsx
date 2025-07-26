@@ -3,7 +3,7 @@
 import { Button } from "./ui/button";
 import { ActionDropdown } from "./ui/action-dropdown";
 import { Loader2, Zap } from "lucide-react";
-import { BOOST_TECHNIQUES, BoostTechnique } from "@/lib/boost-techniques";
+import { BOOST_TECHNIQUES, BoostTechnique } from "@/config/boost-techniques";
 
 interface BoostControlsProps {
   boostTechnique: BoostTechnique;

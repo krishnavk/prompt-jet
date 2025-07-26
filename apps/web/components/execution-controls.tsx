@@ -3,7 +3,7 @@
 import { Button } from "./ui/button";
 import { ActionDropdown } from "./ui/action-dropdown";
 import { Loader2, Play } from "lucide-react";
-import { Provider } from "@/lib/providers";
+import { Provider } from "@/config/providers";
 
 interface ExecutionControlsProps {
   selectedProviders: Provider[];

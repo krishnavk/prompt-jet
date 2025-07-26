@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useApiConfig } from "@/lib/api-config";
-import { AVAILABLE_PROVIDERS } from "@/lib/providers";
-import { BoostTechnique } from "@/lib/boost-techniques";
-import { getBoostTemplate } from "@/lib/boost-templates";
+import { useApiConfig } from "@/hooks/use-api-config";
+import { AVAILABLE_PROVIDERS } from "@/config/providers";
+import { BoostTechnique } from "@/config/boost-techniques";
+import { getBoostTemplate } from "@/config/boost-templates";
 
 interface UseBoostPromptProps {
   setPrompt: (prompt: string) => void;
@@ -35,7 +35,7 @@ export function useBoostPrompt({
 
     // Use OpenRouter GPT-4 as the default provider for boosting
     const openRouterProvider = AVAILABLE_PROVIDERS.find(
-      (p) => p.provider === "openrouter" && p.model === "openai/gpt-4.1"
+      (p) => p.provider === "openrouter" && p.model === "openai/gpt-4o"
     );
 
     if (!openRouterProvider) {

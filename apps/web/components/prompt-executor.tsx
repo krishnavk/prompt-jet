@@ -1,18 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { useApiConfig } from "@/lib/api-config";
-import { AVAILABLE_PROVIDERS } from "@/lib/providers";
-import { Provider } from "@/lib/providers";
-import { BoostTechnique } from "@/lib/boost-techniques";
+import { useApiConfig } from "@/hooks/use-api-config";
+import { AVAILABLE_PROVIDERS } from "@/config/providers";
+import { Provider } from "@/config/providers";
+import { BoostTechnique } from "@/config/boost-techniques";
 import { PromptControls } from "./prompt-controls";
 import { ConfigurationNotice } from "./configuration-notice";
 import { ResultsDisplay } from "./results-display";
 import { PromptHeader } from "./prompt-header";
 import { PromptTextarea } from "./prompt-textarea";
-import { useBoostPrompt } from "@/lib/use-boost-prompt";
-import { executePrompt } from "@/lib/execute-prompt";
-import { copyToClipboard } from "@/lib/clipboard";
+import { useBoostPrompt } from "@/hooks/use-boost-prompt";
+import { executePrompt } from "@/services/execute-prompt";
+import { copyToClipboard } from "@/utils/clipboard";
 
 export interface ExecutionResult {
   id: string;

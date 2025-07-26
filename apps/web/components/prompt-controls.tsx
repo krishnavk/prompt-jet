@@ -2,8 +2,8 @@
 
 import { BoostControls } from "./boost-controls";
 import { ExecutionControls } from "./execution-controls";
-import { Provider } from "@/lib/providers";
-import { BOOST_TECHNIQUES, BoostTechnique } from "@/lib/boost-techniques";
+import { Provider } from "@/config/providers";
+import { BOOST_TECHNIQUES, BoostTechnique } from "@/config/boost-techniques";
 
 interface PromptControlsProps {
   // Boost controls props
