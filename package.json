@@ -8,7 +8,7 @@
     "packages/shared"
   ],
   "scripts": {
-    "export:web": "cd apps/web && GITHUB_PAGES=true next build && GITHUB_PAGES=true next export",
+    "export:web": "cd apps/web && GITHUB_PAGES=true next build", 
     "deploy:web": "npm run export:web && gh-pages -d apps/web/out",
     "dev": "npm run dev:web",
     "dev:web": "cd apps/web && npm run dev",
