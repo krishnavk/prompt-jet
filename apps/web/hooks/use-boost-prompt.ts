@@ -21,7 +21,7 @@ export function useBoostPrompt({
   setSelectedProviders,
 }: UseBoostPromptProps) {
   const [isBoosting, setIsBoosting] = useState(false);
-  const { openRouterApiKey, isConfigured } = useApiConfig();
+  const { openRouterApiKey, isConfigured, passphrase, setPassphrase } = useApiConfig();
 
   // Memoize the provider lookup
   const openRouterProvider = useMemo(() =>

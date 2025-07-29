@@ -32,7 +32,7 @@ export function PromptExecutor() {
   const [boostTechnique, setBoostTechnique] =
     useState<BoostTechnique>("enhance");
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
-  const { openRouterApiKey, isConfigured } = useApiConfig();
+  const { openRouterApiKey, isConfigured, passphrase, setPassphrase } = useApiConfig();
 
   const { boostPrompt, isBoosting } = useBoostPrompt({
     setPrompt,

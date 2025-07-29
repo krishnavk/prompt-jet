@@ -1,14 +1,7 @@
 "use client";
 
-import { useLocalStorage } from "./use-local-storage";
+import { useApiConfigContext } from "./api-config-context";
 
 export function useApiConfig() {
-  const [openRouterApiKey] = useLocalStorage<string>("openrouter-api-key", "");
-
-  return {
-    openRouterApiKey,
-    isConfigured: {
-      openrouter: !!openRouterApiKey,
-    },
-  };
+  return useApiConfigContext();
 }

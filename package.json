@@ -10,15 +10,14 @@
   "scripts": {
     "dev": "npm run dev:web",
     "dev:web": "cd apps/web && npm run dev",
-
     "build": "npm run build:web",
     "build:web": "cd apps/web && npm run build",
-
     "audit": "npm audit",
     "audit:fix": "npm audit fix",
     "security:check": "npm run audit && cd apps/web && npm audit"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "concurrently": "^9.2.0"
   },
   "dependencies": {
