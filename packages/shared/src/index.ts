@@ -1,7 +1,7 @@
 // Clients
 export { BaseLLMClient } from './clients/base-client';
 export { OpenRouterClient } from './clients/openrouter-client';
-export { LMStudioClient } from './clients/lmstudio-client';
+// export { LMStudioClient } from './clients/lmstudio-client';
 export { LLMClientFactory } from './clients/client-factory';
 
 // Services
