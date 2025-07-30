@@ -10,6 +10,7 @@ import { ConfigurationNotice } from "./configuration-notice";
 import { ResultsDisplay } from "./results-display";
 import { PromptHeader } from "./prompt-header";
 import { PromptTextarea } from "./prompt-textarea";
+import { PromptIndicators } from "./prompt-indicators";
 import { useBoostPrompt } from "@/hooks/use-boost-prompt";
 import { executePromptParallel } from "@/services/execute-prompt";
 import { copyToClipboard } from "@/utils/clipboard";
@@ -78,11 +79,14 @@ export function PromptExecutor() {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <PromptHeader />
-      <PromptTextarea
-        value={prompt}
-        onChange={setPrompt}
-        placeholder="Enter your prompt here..."
-      />
+      <div className="space-y-3">
+        <PromptTextarea
+          value={prompt}
+          onChange={setPrompt}
+          placeholder="Enter your prompt here..."
+        />
+        <PromptIndicators prompt={prompt} results={results} />
+      </div>
 
       <PromptControls
         boostTechnique={boostTechnique}
