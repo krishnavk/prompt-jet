@@ -8,10 +8,7 @@ A full-stack LLM prompt execution platform (web only) that allows you to run pro
 - Support for OpenRouter API and local LM Studio
 - Real-time streaming responses
 - Execution metrics (response time, tokens, cost)
-- Shareable prompt results
 - Clean DDD architecture
-
-**Note:** Desktop (Tauri) integration has been removed. This project is now web-only.
 
 ## Tech Stack
 
