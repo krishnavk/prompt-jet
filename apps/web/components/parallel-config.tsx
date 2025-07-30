@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export interface ParallelConfig {
   enabled: boolean;
@@ -35,98 +38,96 @@ export function ParallelConfig({ config, onConfigChange }: ParallelConfigProps) 
 
       <div className="flex items-center justify-between">
         <div>
-          <label htmlFor="parallel-enabled" className="text-sm font-medium">
+          <Label htmlFor="parallel-enabled" className="text-sm font-medium">
             Enable Parallel Execution
-          </label>
+          </Label>
           <p className="text-xs text-gray-500">
             Execute multiple providers simultaneously to reduce total execution time
           </p>
         </div>
-        <input
+        <Checkbox
           id="parallel-enabled"
-          type="checkbox"
           checked={localConfig.enabled}
-          onChange={(e) => handleChange('enabled', e.target.checked)}
-          className="h-4 w-4 rounded border-gray-300"
+          onCheckedChange={(checked) => handleChange('enabled', checked)}
         />
       </div>
 
       {localConfig.enabled && (
-        <>
+        <div className="space-y-4">
           <div>
-            <label htmlFor="max-concurrency" className="block text-sm font-medium">
-              Maximum Concurrency
-            </label>
-            <input
+            <Label htmlFor="max-concurrency" className="text-sm font-medium">
+              Maximum Concurrency: {localConfig.maxConcurrency}
+            </Label>
+            <p className="text-xs text-gray-500 mb-2">
+              Maximum number of simultaneous API calls (1-20)
+            </p>
+            <Input
               id="max-concurrency"
-              type="number"
+              type="range"
               min="1"
               max="20"
               value={localConfig.maxConcurrency}
               onChange={(e) => handleChange('maxConcurrency', parseInt(e.target.value))}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="w-full"
             />
-            <p className="mt-1 text-xs text-gray-500">
-              Maximum number of simultaneous API calls (1-20)
-            </p>
           </div>
 
           <div>
-            <label htmlFor="timeout-ms" className="block text-sm font-medium">
-              Request Timeout (ms)
-            </label>
-            <input
+            <Label htmlFor="timeout-ms" className="text-sm font-medium">
+              Request Timeout (ms): {localConfig.timeoutMs}
+            </Label>
+            <p className="text-xs text-gray-500 mb-2">
+              Maximum time to wait for a single request (5-120 seconds)
+            </p>
+            <Input
               id="timeout-ms"
-              type="number"
+              type="range"
               min="5000"
               max="120000"
               step="1000"
               value={localConfig.timeoutMs}
               onChange={(e) => handleChange('timeoutMs', parseInt(e.target.value))}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="w-full"
             />
-            <p className="mt-1 text-xs text-gray-500">
-              Maximum time to wait for a single request (5-120 seconds)
-            </p>
           </div>
 
           <div>
-            <label htmlFor="retry-attempts" className="block text-sm font-medium">
-              Retry Attempts
-            </label>
-            <input
+            <Label htmlFor="retry-attempts" className="text-sm font-medium">
+              Retry Attempts: {localConfig.retryAttempts}
+            </Label>
+            <p className="text-xs text-gray-500 mb-2">
+              Number of retry attempts for failed requests
+            </p>
+            <Input
               id="retry-attempts"
-              type="number"
+              type="range"
               min="0"
               max="5"
               value={localConfig.retryAttempts}
               onChange={(e) => handleChange('retryAttempts', parseInt(e.target.value))}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="w-full"
             />
-            <p className="mt-1 text-xs text-gray-500">
-              Number of retry attempts for failed requests
-            </p>
           </div>
 
           <div>
-            <label htmlFor="retry-delay" className="block text-sm font-medium">
-              Retry Delay (ms)
-            </label>
-            <input
+            <Label htmlFor="retry-delay" className="text-sm font-medium">
+              Retry Delay (ms): {localConfig.retryDelayMs}
+            </Label>
+            <p className="text-xs text-gray-500 mb-2">
+              Delay between retry attempts (100ms-10s)
+            </p>
+            <Input
               id="retry-delay"
-              type="number"
+              type="range"
               min="100"
               max="10000"
               step="100"
               value={localConfig.retryDelayMs}
               onChange={(e) => handleChange('retryDelayMs', parseInt(e.target.value))}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="w-full"
             />
-            <p className="mt-1 text-xs text-gray-500">
-              Delay between retry attempts (100ms-10s)
-            </p>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

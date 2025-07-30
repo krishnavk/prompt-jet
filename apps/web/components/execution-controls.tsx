@@ -2,10 +2,9 @@
 
 import { Button } from "./ui/button";
 import { ActionDropdown } from "./ui/action-dropdown";
-import { Loader2, Play, Settings } from "lucide-react";
+import { Loader2, Play } from "lucide-react";
 import { Provider } from "@/config/providers";
 import { useState } from "react";
-import { ParallelConfig } from "./parallel-config";
 
 interface ExecutionControlsProps {
   selectedProviders: Provider[];
@@ -30,14 +29,7 @@ export function ExecutionControls({
   availableProviders,
   isConfigured,
 }: ExecutionControlsProps) {
-  const [showConfig, setShowConfig] = useState(false);
-  const [parallelConfig, setParallelConfig] = useState({
-    enabled: true,
-    maxConcurrency: 5,
-    timeoutMs: 30000,
-    retryAttempts: 2,
-    retryDelayMs: 1000,
-  });
+
 
   return (
     <>
@@ -116,40 +108,7 @@ export function ExecutionControls({
             </>
           )}
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowConfig(true)}
-          title="Parallel Execution Settings"
-        >
-          <Settings className="h-4 w-4" />
-        </Button>
       </div>
-      
-      {showConfig && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Parallel Execution Settings</h2>
-              <button
-                onClick={() => setShowConfig(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                ×
-              </button>
-            </div>
-            <ParallelConfig
-              config={parallelConfig}
-              onConfigChange={setParallelConfig}
-            />
-            <div className="mt-4 flex justify-end">
-              <Button onClick={() => setShowConfig(false)}>
-                Close
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

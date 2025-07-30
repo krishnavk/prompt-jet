@@ -1,7 +1,6 @@
 import { ParallelExecutor, ParallelExecutionTask, ParallelExecutionResult } from './parallel-executor';
 import { LLMClientFactory } from '../clients/client-factory';
-import { ILLMClient } from '../interfaces/llm-client.interface';
-import { LLMRequest, LLMResponse } from '../types/llm.types';
+import { LLMRequest } from '../types/llm.types';
 
 export interface BatchRequest {
   id: string;
@@ -50,30 +49,30 @@ export class BatchProcessor {
     progress?: BatchProgress
   ): Promise<BatchResult[]> {
     const tasks: ParallelExecutionTask[] = [];
-    
+
     for (const request of requests) {
       try {
         // Get the provider from metadata or default to 'openrouter'
         const provider = request.metadata?.provider || 'openrouter';
-        
+
         // Log the provider and API key for debugging
         console.log(`[BatchProcessor] Creating client for provider: ${provider}`, {
           hasApiKey: !!(request.apiConfig?.apiKey || (provider === 'openrouter' && process.env.OPENROUTER_API_KEY))
         });
-        
+
         // Create client using the factory with proper configuration
         const clientConfig: any = {
           // Common config
           ...request.apiConfig,
           // Provider-specific overrides
-          ...(provider === 'openrouter' && { 
+          ...(provider === 'openrouter' && {
             apiKey: request.apiConfig?.apiKey || process.env.OPENROUTER_API_KEY,
             baseUrl: 'https://openrouter.ai/api/v1' // Explicitly set OpenRouter API URL
           })
         };
-        
+
         const client = LLMClientFactory.createClient(provider, clientConfig);
-        
+
         const llmRequest: LLMRequest = {
           model: request.apiConfig?.model || 'default',
           messages: [{ role: 'user', content: request.prompt }],

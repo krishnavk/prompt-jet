@@ -1,7 +1,4 @@
 import { BatchProcessor, BatchRequest, BatchResult } from './batch-processor';
-import { LLMClientFactory } from '../clients/client-factory';
-import { ILLMClient } from '../interfaces/llm-client.interface';
-import { LLMMessage, LLMRequest, LLMResponse } from '../types/llm.types';
 
 export interface Provider {
   provider: string;
@@ -9,10 +6,18 @@ export interface Provider {
 }
 
 export interface ExecutePromptOptions {
+  // Prompt-specific settings
+  temperature?: number;
+  topP?: number;
+  topK?: number;
+  maxTokens?: number;
+  frequencyPenalty?: number;
+  presencePenalty?: number;
+  stopSequences?: string[];
+  openRouterApiKey?: string;
   maxConcurrency?: number;
   timeoutMs?: number;
   retries?: number;
-  openRouterApiKey?: string;
 }
 
 export interface ExecutionResult {
@@ -31,16 +36,25 @@ export class PromptExecutor {
 
   constructor(options: ExecutePromptOptions = {}) {
     this.options = {
-      maxConcurrency: 5,
-      timeoutMs: 30000,
-      retries: 2,
+      temperature: 0.7,
+      topP: 1.0,
+      topK: 50,
+      maxTokens: 1000,
+      frequencyPenalty: 0.0,
+      presencePenalty: 0.0,
       ...options,
     };
 
+    // Extract parallel execution settings from options or use defaults
+    const maxConcurrency = options.maxConcurrency ?? 5;
+    const timeoutMs = options.timeoutMs ?? 30000;
+    const retries = options.retries ?? 2;
+
+    // Use parallel execution settings
     this.batchProcessor = new BatchProcessor({
-      maxConcurrency: this.options.maxConcurrency,
-      timeoutMs: this.options.timeoutMs,
-      retries: this.options.retries,
+      maxConcurrency,
+      timeoutMs,
+      retries,
     });
   }
 
@@ -101,8 +115,13 @@ export class PromptExecutor {
         prompt: prompt,
         apiConfig: {
           model: provider.model,
-          temperature: 0.7,
-          max_tokens: 1000,
+          temperature: this.options.temperature,
+          top_p: this.options.topP,
+          top_k: this.options.topK,
+          max_tokens: this.options.maxTokens,
+          frequency_penalty: this.options.frequencyPenalty,
+          presence_penalty: this.options.presencePenalty,
+          stop: this.options.stopSequences,
           // Include the OpenRouter API key in the config
           apiKey: this.options.openRouterApiKey,
           // Set the base URL for OpenRouter

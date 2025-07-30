@@ -40,13 +40,38 @@ export function PromptExecutor() {
   });
 
   const handleExecutePrompt = async () => {
+    // Load prompt config from localStorage
+    let promptConfig = {
+      temperature: 0.7,
+      topP: 1.0,
+      topK: 50,
+      maxTokens: 1000,
+      frequencyPenalty: 0.0,
+      presencePenalty: 0.0,
+      stopSequences: [],
+    };
+    
+    try {
+      const savedPromptConfig = localStorage.getItem('promptConfig');
+      if (savedPromptConfig) {
+        const parsedConfig = JSON.parse(savedPromptConfig);
+        // Convert stopSequences string to array if needed
+        if (typeof parsedConfig.stopSequences === 'string') {
+          parsedConfig.stopSequences = parsedConfig.stopSequences.split(',').map((s: string) => s.trim()).filter((s: string) => s);
+        }
+        promptConfig = { ...promptConfig, ...parsedConfig };
+      }
+    } catch (e) {
+      console.warn('Failed to load prompt config from localStorage', e);
+    }
+    
     await executePromptParallel({
       prompt,
       selectedProviders,
       openRouterApiKey,
-
       setIsExecuting,
       setResults,
+      ...promptConfig,
     });
   };
 

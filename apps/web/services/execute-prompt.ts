@@ -27,12 +27,20 @@ interface ExecutePromptParams {
   setIsExecuting: (isExecuting: boolean) => void;
   /** Callback to update the results */
   setResults: (results: ExecutionResult[] | ((prev: ExecutionResult[]) => ExecutionResult[])) => void;
-  /** Maximum number of concurrent requests */
-  maxConcurrency?: number;
-  /** Request timeout in milliseconds */
-  timeoutMs?: number;
-  /** Number of retry attempts */
-  retries?: number;
+  /** Temperature for sampling */
+  temperature?: number;
+  /** Top-p sampling parameter */
+  topP?: number;
+  /** Top-k sampling parameter */
+  topK?: number;
+  /** Maximum number of tokens to generate */
+  maxTokens?: number;
+  /** Frequency penalty */
+  frequencyPenalty?: number;
+  /** Presence penalty */
+  presencePenalty?: number;
+  /** Stop sequences */
+  stopSequences?: string[];
   /** Progress callback */
   onProgress?: (completed: number, total: number) => void;
 }
@@ -51,9 +59,12 @@ export const executePromptParallel = async ({
   openRouterApiKey,
   setIsExecuting,
   setResults,
-  maxConcurrency = 5,
-  timeoutMs = 30000,
-  retries = 2,
+  temperature = 0.7,
+  topP = 1.0,
+  topK = 50,
+  maxTokens = 1000,
+  frequencyPenalty = 0.0,
+  presencePenalty = 0.0,
   onProgress,
 }: ExecutePromptParams): Promise<ExecutionResult[]> => {
   if (!prompt.trim() || selectedProviders.length === 0) return [];
@@ -61,12 +72,43 @@ export const executePromptParallel = async ({
   setIsExecuting(true);
   setResults([]);
 
+  // Load parallel config from localStorage
+  let parallelConfig = {
+    enabled: true,
+    maxConcurrency: 5,
+    timeoutMs: 30000,
+    retries: 2,
+  };
+  
+  try {
+    const savedParallelConfig = localStorage.getItem('parallelConfig');
+    if (savedParallelConfig) {
+      const parsedConfig = JSON.parse(savedParallelConfig);
+      parallelConfig = { ...parallelConfig, ...parsedConfig };
+      // Map retryAttempts to retries for backward compatibility
+      if (parsedConfig.retryAttempts !== undefined) {
+        parallelConfig.retries = parsedConfig.retryAttempts;
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to load parallel config from localStorage', e);
+  }
+
   try {
     const promptExecutor = new PromptExecutor({
-      maxConcurrency,
-      timeoutMs,
-      retries,
-      openRouterApiKey
+      temperature,
+      topP,
+      topK,
+      maxTokens,
+      frequencyPenalty,
+      presencePenalty,
+      openRouterApiKey,
+      // Only pass parallel execution settings if enabled
+      ...(parallelConfig.enabled ? {
+        maxConcurrency: parallelConfig.maxConcurrency,
+        timeoutMs: parallelConfig.timeoutMs,
+        retries: parallelConfig.retries,
+      } : {})
     });
 
     // Map the provider config to the expected Provider type
@@ -126,7 +168,7 @@ export const executePromptSequential = async ({
   openRouterApiKey,
   setIsExecuting,
   setResults,
-}: Omit<ExecutePromptParams, 'maxConcurrency' | 'timeoutMs' | 'retries' | 'onProgress'>): Promise<ExecutionResult[]> => {
+}: Omit<ExecutePromptParams, 'temperature' | 'topP' | 'topK' | 'maxTokens' | 'frequencyPenalty' | 'presencePenalty' | 'stopSequences' | 'onProgress'>): Promise<ExecutionResult[]> => {
   if (!prompt.trim() || selectedProviders.length === 0) return [];
 
   setIsExecuting(true);
