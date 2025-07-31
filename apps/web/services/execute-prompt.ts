@@ -17,6 +17,8 @@ export interface ProviderConfig {
  * Parameters for executing a prompt
  */
 interface ExecutePromptParams {
+  /** Streaming callback: called with (providerId, growingContent) as each chunk is streamed */
+  onStreamChunk?: (providerId: string, content: string) => void;
   /** The prompt text to execute */
   prompt: string;
   /** List of providers to execute the prompt with */
@@ -66,6 +68,7 @@ export const executePromptParallel = async ({
   frequencyPenalty = 0.0,
   presencePenalty = 0.0,
   onProgress,
+  onStreamChunk,
 }: ExecutePromptParams): Promise<ExecutionResult[]> => {
   if (!prompt.trim() || selectedProviders.length === 0) return [];
 
@@ -142,7 +145,8 @@ export const executePromptParallel = async ({
         };
         allResults.push(executionResult);
         setResults([...allResults]);
-      }
+      },
+      onStreamChunk
     );
 
     // Return all results (already in the correct format from PromptExecutor)

@@ -58,11 +58,20 @@ export class PromptExecutor {
     });
   }
 
+  /**
+   * Execute prompt with all providers, supporting progress, result, and streaming callbacks.
+   * @param prompt The prompt text
+   * @param providers List of providers
+   * @param onProgress Called with (completed, total) as each finishes
+   * @param onResult Called with each provider's full result as it finishes
+   * @param onStreamChunk (optional) Called with (providerId, growingContent) as each chunk is streamed
+   */
   async execute(
     prompt: string,
     providers: Provider[],
     onProgress?: (completed: number, total: number) => void,
-    onResult?: (result: ExecutionResult) => void
+    onResult?: (result: ExecutionResult) => void,
+    onStreamChunk?: (providerId: string, content: string) => void
   ): Promise<ExecutionResult[]> {
     console.log('[PromptExecutor] Starting execution with providers:', JSON.stringify(providers, null, 2));
 
@@ -87,6 +96,7 @@ export class PromptExecutor {
           onResult?.(executionResult);
           results.push(executionResult);
         },
+        onStreamChunk,
       });
 
       return batchResults.map((result) => this.mapBatchResultToExecutionResult(result));

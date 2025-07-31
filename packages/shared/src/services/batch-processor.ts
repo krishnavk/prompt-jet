@@ -31,6 +31,7 @@ export interface BatchProcessorOptions {
 export interface BatchProgress {
   onProgress?: (completed: number, total: number) => void;
   onResult?: (result: BatchResult) => void;
+  onStreamChunk?: (providerId: string, content: string) => void;
 }
 
 export class BatchProcessor {
@@ -51,6 +52,7 @@ export class BatchProcessor {
     const tasks: ParallelExecutionTask[] = [];
 
     for (const request of requests) {
+      let partialContent = '';
       try {
         // Get the provider from metadata or default to 'openrouter'
         const provider = request.metadata?.provider || 'openrouter';
@@ -79,6 +81,24 @@ export class BatchProcessor {
           max_tokens: request.apiConfig?.max_tokens || 1000,
           temperature: request.apiConfig?.temperature ?? 0.7,
         };
+
+        // If streaming is supported, wire up the onStreamChunk callback
+        if (progress?.onStreamChunk && typeof client.executePromptStream === 'function') {
+          (async () => {
+            try {
+              for await (const chunk of client.executePromptStream(llmRequest)) {
+                const delta = chunk.choices?.[0]?.delta?.content || '';
+                if (delta) {
+                  partialContent += delta;
+                  progress.onStreamChunk(request.id, partialContent);
+                }
+              }
+            } catch (e) {
+              // Streaming errors should not break the main batch
+              console.warn('Streaming error for provider', provider, e);
+            }
+          })();
+        }
 
         tasks.push({
           requestId: request.id,

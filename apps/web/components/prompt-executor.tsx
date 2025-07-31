@@ -26,6 +26,8 @@ export interface ExecutionResult {
 }
 
 export function PromptExecutor() {
+  // Map of provider id to partial/growing response
+  const [partialResults, setPartialResults] = useState<Record<string, string>>({});
   const [prompt, setPrompt] = useState("");
   const [selectedProviders, setSelectedProviders] = useState<Provider[]>([]);
   const [results, setResults] = useState<ExecutionResult[]>([]);
@@ -41,6 +43,8 @@ export function PromptExecutor() {
   });
 
   const handleExecutePrompt = async () => {
+    // Reset partial results for new execution
+    setPartialResults({});
     // Load prompt config from localStorage
     let promptConfig = {
       temperature: 0.7,
@@ -73,6 +77,10 @@ export function PromptExecutor() {
       setIsExecuting,
       setResults,
       ...promptConfig,
+      onStreamChunk: (providerId, content) => {
+        console.log('[STREAM] provider:', providerId, 'content:', content);
+        setPartialResults(prev => ({ ...prev, [providerId]: content }));
+      },
     });
   };
 
@@ -107,7 +115,24 @@ export function PromptExecutor() {
       />
       <ConfigurationNotice isConfigured={isConfigured} />
 
-      <ResultsDisplay results={results} onCopyToClipboard={copyToClipboard} />
+      {/* Merge full results with partial/growing streamed results */}
+      <ResultsDisplay
+        results={results.length > 0
+          ? results.map(r => ({
+              ...r,
+              response: r.response || partialResults[r.id] || ''
+            }))
+          : Object.entries(partialResults).map(([id, response]) => ({
+              id,
+              provider: id,
+              model: '',
+              response,
+              tokensUsed: 0,
+              executionTimeMs: 0,
+            }))
+        }
+        onCopyToClipboard={copyToClipboard}
+      />
     </div>
   );
 }
