@@ -1,270 +1,221 @@
 export const getBoostTemplate = (technique: string, promptText: string): string => {
   switch (technique) {
     case "chain":
-      return `You are an expert in chain-of-thought prompting. Transform the following prompt so that it:
+      return `You are skilled in chain-of-thought prompting. Rewrite the prompt to:
 
-**Instructions:**
-1. Break the task into clear, numbered reasoning steps.
-2. Start with "Let's think step by step."
-3. Ensure each step is explicit and logically follows the previous.
-4. Use concise, direct language.
-5. End with a final answer after all steps.
-6. Respond as efficiently as possible. Avoid unnecessary elaboration.
+1. Start with "Let's think step by step."
+2. Use numbered, logical steps.
+3. Be concise; end with a final answer.
 
-**Output Format:**
-- Use a numbered list for steps.
-- Highlight the final answer.
+Format:
+- Numbered list
+- Clearly marked final answer
 
 <original_prompt>
 ${promptText}
-</original_prompt>
-
-Return only the improved prompt, no explanations.`;
+</original_prompt>`;
 
     case "role":
-      return `You are a prompt engineer. Enhance the following prompt by making the AI take on a specific expert role and domain context.
+      return `You are a prompt engineer. Modify the prompt to assign a relevant expert role.
 
-**Instructions:**
-1. Assign a clear, relevant expert persona (e.g., "You are a senior data scientist...").
-2. Specify domain knowledge and perspective.
-3. Make the role actionable and relevant to the task.
-4. Ensure instructions are direct and unambiguous.
-5. Respond concisely and avoid unnecessary details.
+1. Define an expert persona.
+2. Add domain context.
+3. Make it task-specific and clear.
 
-**Output Format:**
-- Start with the expert role statement.
-- Follow with the enhanced prompt.
+Format:
+- Role statement
+- Revised prompt
 
 <original_prompt>
 ${promptText}
 </original_prompt>`;
 
     case "constraints":
-      return `You are a prompt engineer. Make the following prompt more focused by adding clear constraints and requirements.
+      return `Add clear constraints to the prompt.
 
-**Instructions:**
-1. Add explicit boundaries (e.g., "Do not use...", "Only include...").
-2. Specify required format (e.g., table, bullet list).
-3. Add length or word limits if relevant.
-4. State what to exclude or avoid.
-5. Respond as briefly as possible while meeting requirements.
+1. Define limits (e.g., format, length, exclusions).
+2. Be specific and brief.
 
-**Output Format:**
-- List all constraints before the main prompt.
-- Use bullet points for constraints.
+Format:
+- Bullet list of constraints
+- Revised prompt
 
 <original_prompt>
 ${promptText}
 </original_prompt>`;
 
     case "examples":
-      return `You are a prompt engineer. Improve the following prompt by adding clear, relevant examples.
+      return `Improve the prompt by adding 2–3 concise examples.
 
-**Instructions:**
-1. Add 2-3 diverse, illustrative examples.
-2. Show both input and expected output for each.
-3. Use the desired format and style.
-4. Place examples before the main prompt.
-5. Keep examples and prompt concise for fast reading.
+1. Include both input and output.
+2. Match desired format and tone.
 
-**Output Format:**
-- List examples first, then the main prompt.
-- Use markdown code blocks if appropriate.
+Format:
+- Examples first
+- Then the prompt
 
 <original_prompt>
 ${promptText}
 </original_prompt>`;
 
     case "meta":
-      return `You are a meta-prompting expert. Turn the following into a meta-prompt that guides the AI to self-improve its responses.
+      return `Make the prompt guide AI to self-evaluate and improve.
 
-**Instructions:**
-1. Add instructions for the AI to evaluate its own response for quality and relevance.
-2. Include criteria for improvement and self-reflection.
-3. Encourage iterative refinement.
-4. Require the AI to critique and revise its own answer.
-5. Keep all steps efficient and avoid lengthy explanations.
+1. Add review and refinement steps.
+2. Include quality checks.
+3. Be brief and focused.
 
-**Output Format:**
-- Meta-prompt with explicit self-evaluation and improvement steps.
+Format:
+- Meta-prompt with eval and improvement steps
 
 <original_prompt>
 ${promptText}
 </original_prompt>`;
 
     case "contextual":
-      return `You are a contextual prompting expert. Improve the following prompt by adding detailed background and situational context.
+      return `Add minimal but relevant context.
 
-**Instructions:**
-1. Add relevant facts, domain knowledge, and background information.
-2. Specify the audience, use case, and situation.
-3. Include any historical or environmental factors.
-4. Make the context actionable and directly related to the task.
-5. Summarize context efficiently; avoid unnecessary detail.
+1. Include background, audience, and use case.
+2. Be concise and actionable.
 
-**Output Format:**
-- Context paragraph first, then the main prompt.
+Format:
+- Context first
+- Then the prompt
 
 <original_prompt>
 ${promptText}
 </original_prompt>`;
 
     case "tot":
-      return `You are a Tree of Thoughts prompting expert. Transform the prompt to encourage exploring multiple reasoning paths.
+      return `Rewrite the prompt to explore multiple reasoning paths.
 
-**Instructions:**
-1. Structure the prompt to require 3-4 different solution approaches.
-2. For each path, specify evaluation criteria.
-3. Add instructions for comparing, synthesizing, and selecting the best solution.
-4. Include steps for backtracking and refinement.
-5. Be concise and avoid lengthy justifications.
+1. Create 3–4 solution branches.
+2. Add compare + synthesize step.
 
-**Output Format:**
-- Numbered sections for each reasoning path.
-- Final synthesis and selection at the end.
+Format:
+- Numbered paths
+- Final decision step
 
 <original_prompt>
 ${promptText}
 </original_prompt>`;
 
     case "generated":
-      return `You are an expert in generated knowledge prompting. Improve the prompt by requiring generation and verification of background knowledge before answering.
+      return `Require AI to generate and verify facts before answering.
 
-**Instructions:**
-1. Add a step to gather and synthesize relevant facts before answering.
-2. Include instructions to verify and integrate the knowledge.
-3. Require a confidence assessment for the generated facts.
-4. Keep knowledge and answer sections concise.
+1. Gather key info.
+2. Assess confidence.
+3. Use it in final answer.
 
-**Output Format:**
-- Section for generated knowledge.
-- Section for main answer using that knowledge.
+Format:
+- Knowledge section
+- Answer section
 
 <original_prompt>
 ${promptText}
 </original_prompt>`;
 
     case "chaining":
-      return `You are a prompt chaining expert. Break down the task into a sequence of dependent steps.
+      return `Break the task into dependent steps.
 
-**Instructions:**
-1. Decompose the task into 3-5 sequential steps.
-2. Make each step's output the input for the next.
-3. Add validation and error handling at each step.
-4. Ensure clear handoffs and checkpoints.
-5. Keep each step as brief as possible.
+1. Each step builds on the last.
+2. Include checks.
+3. Keep steps short.
 
-**Output Format:**
-- Numbered list, one for each chain step.
-- Note dependencies between steps.
+Format:
+- Numbered steps
+- Note dependencies
 
 <original_prompt>
 ${promptText}
 </original_prompt>`;
 
     case "reflexion":
-      return `You are a Reflexion prompting expert. Add self-reflection and iterative improvement mechanisms to the prompt.
+      return `Add a self-check loop.
 
-**Instructions:**
-1. Require the AI to self-evaluate its answer and reasoning.
-2. Add instructions for iterative refinement.
-3. Include memory of previous attempts or lessons learned.
-4. Add meta-cognitive analysis and improvement suggestions.
-5. Keep all sections concise and focused.
+1. Generate.
+2. Reflect and critique.
+3. Revise.
+4. Keep all brief.
 
-**Output Format:**
-- Self-evaluation section after the answer.
-- List of improvements or lessons learned.
+Format:
+- Answer
+- Self-review
+- Final version
 
 <original_prompt>
 ${promptText}
 </original_prompt>`;
 
     case "constitutional":
-      return `You are a Constitutional AI expert. Enhance the prompt with explicit ethical and safety guidelines.
+      return `Add ethical rules to the prompt.
 
-**Instructions:**
-1. Add clear ethical principles and safety rules.
-2. Specify harm prevention and bias mitigation steps.
-3. Include transparency and accountability requirements.
-4. Ensure all instructions align with human values.
-5. Present only essential guidelines for efficiency.
+1. Include safety, fairness, and transparency.
+2. Be short and direct.
 
-**Output Format:**
-- Ethical guidelines section before the main prompt.
-- Use bullet points for each principle.
+Format:
+- Bullet list of principles
+- Then the prompt
 
 <original_prompt>
 ${promptText}
 </original_prompt>`;
 
     case "ensemble":
-      return `You are an ensemble prompting expert. Transform the prompt to combine multiple expert perspectives and approaches.
+      return `Use multiple expert viewpoints.
 
-**Instructions:**
-1. Generate 3-5 responses from different expert viewpoints.
-2. Synthesize and build consensus among responses.
-3. Add voting or weighting for best solutions.
-4. Resolve any contradictions.
-5. Keep each expert's answer short and to the point.
+1. Give 3–5 short answers from different roles.
+2. Combine into one final output.
 
-**Output Format:**
-- Separate sections for each expert's answer.
-- Final consensus or synthesis section.
+Format:
+- Each expert’s answer
+- Final consensus
 
 <original_prompt>
 ${promptText}
 </original_prompt>`;
 
     case "stepback":
-      return `You are a step-back prompting expert. Improve the prompt by first addressing broader, fundamental questions before specifics.
+      return `Step back before solving.
 
-**Instructions:**
-1. Start with high-level, abstract questions and concepts.
-2. Use first-principles reasoning before concrete application.
-3. Show how the step-back informs the specific solution.
-4. Keep all sections brief and avoid unnecessary detail.
+1. Start with abstract questions.
+2. Then go specific.
+3. Link both clearly.
 
-**Output Format:**
-- Section for broad questions/concepts.
-- Section for specific solution.
+Format:
+- Abstract view
+- Detailed solution
 
 <original_prompt>
 ${promptText}
 </original_prompt>`;
 
     case "react":
-      return `You are a ReAct prompting expert. Transform the prompt to alternate between reasoning and action.
+      return `Alternate Thought → Action → Observation cycles.
 
-**Instructions:**
-1. Structure as cycles: Thought → Action → Observation.
-2. Require explicit reasoning before each action.
-3. Add reflection after each action.
-4. Iterate until the task is complete.
-5. Keep each cycle concise and focused.
+1. Think before each action.
+2. Reflect after.
+3. Repeat until done.
 
-**Output Format:**
-- Clearly labeled sections: Thought, Action, Observation.
-- Repeat as needed.
+Format:
+- T/A/O sections
+- Repeat as needed
 
 <original_prompt>
 ${promptText}
 </original_prompt>`;
 
     case "critique":
-      return `You are a self-critique prompting expert. Transform the prompt to require generation, critique, and refinement of the answer.
+      return `Require AI to critique its own answer.
 
-**Instructions:**
-1. Generate an initial answer.
-2. Provide a detailed critique of the answer.
-3. Suggest and apply improvements.
-4. Repeat critique and refinement if needed.
-5. Keep all responses as brief as possible.
+1. Generate.
+2. Critique.
+3. Revise.
 
-**Output Format:**
-- Initial answer section.
-- Critique section.
-- Improved answer section.
+Format:
+- Initial answer
+- Critique
+- Final version
 
 <original_prompt>
 ${promptText}
@@ -272,19 +223,14 @@ ${promptText}
 
     case "enhance":
     default:
-      return `You are a professional prompt engineer. Make this prompt more specific, actionable, and effective.
+      return `Make this prompt clearer and more useful.
 
-**Instructions:**
-1. Clarify the main goal and required output.
-2. Add explicit steps, requirements, and constraints.
-3. Use bullet points or numbered lists for structure.
-4. Remove ambiguity and redundancy.
-5. Ensure the prompt is self-contained and professional.
-6. Use Markdown formatting for clarity.
-7. Respond as efficiently as possible; avoid unnecessary elaboration.
+1. Clarify goal.
+2. Add steps, format, and limits.
+3. Cut fluff.
 
-**Output Format:**
-- Enhanced prompt only. No explanations or wrapper tags.
+Format:
+- Enhanced prompt only
 
 <original_prompt>
 ${promptText}
