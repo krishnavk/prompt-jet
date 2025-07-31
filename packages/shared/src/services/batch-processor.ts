@@ -113,15 +113,27 @@ export class BatchProcessor {
       }
     );
 
-    return results.map(result => ({
-      id: result.requestId,
-      response: result.response ? {
-        content: result.response.choices[0]?.message?.content || '',
-        usage: result.response.usage,
-      } : undefined,
-      error: result.error?.message,
-      executionTimeMs: result.executionTimeMs,
-      metadata: requests.find(r => r.id === result.requestId)?.metadata,
-    }));
+    return results.map(result => {
+      // Ensure we extract the full completion content, not just the first chunk
+      let content = '';
+      if (result.response && Array.isArray(result.response.choices)) {
+        // Concatenate all message contents if present
+        content = result.response.choices.map(
+          (choice: any) => choice.message?.content || ''
+        ).join('');
+      } else if (result.response?.choices?.[0]?.message?.content) {
+        content = result.response.choices[0].message.content;
+      }
+      return {
+        id: result.requestId,
+        response: result.response ? {
+          content,
+          usage: result.response.usage,
+        } : undefined,
+        error: result.error?.message,
+        executionTimeMs: result.executionTimeMs,
+        metadata: requests.find(r => r.id === result.requestId)?.metadata,
+      };
+    });
   }
 }

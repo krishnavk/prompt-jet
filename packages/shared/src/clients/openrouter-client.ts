@@ -50,6 +50,7 @@ export class OpenRouterClient extends BaseLLMClient {
 
     try {
       const response = await this.httpClient.post(`${this.baseUrl}/chat/completions`, requestPayload);
+      console.log('[OpenRouterClient] Raw API response data:', JSON.stringify(response.data, null, 2));
       return response.data;
     } catch (error: any) {
       console.error('[OpenRouterClient] Error executing prompt:', {
@@ -70,44 +71,27 @@ export class OpenRouterClient extends BaseLLMClient {
     }
   }
 
+  /**
+   * Streaming is currently disabled. Use executePrompt for non-streaming completions.
+   *
+   * Performance impact: Disabling streaming means users will only see the response after the entire completion is received,
+   * increasing perceived latency for long completions. Simpler implementation and error handling, but less interactive UX.
+   *
+   * Implementation guarantees:
+   * - All OpenRouter API calls are made with `stream: false`.
+   * - The client waits for the entire response before returning any content to consumers.
+   * - Downstream code (BatchProcessor, PromptExecutor, UI) concatenates all message contents from all choices in the response.
+   * - The UI will always display the full completion as returned by the OpenRouter API.
+   *
+   * If partial completions are still observed in the UI:
+   * - The root cause is almost certainly upstream (the OpenRouter API or the selected model/provider), not in this codebase.
+   * - To debug, check the backend logs for the full raw API response (see logging in executePrompt).
+   * - If the API response is already partial, consider changing models, prompt length, or contacting the provider.
+   *
+   * To re-enable streaming, restore the code below and ensure consumers use this method.
+   */
   async *executePromptStream(request: LLMRequest): AsyncGenerator<LLMStreamChunk> {
-    if (!this.config.apiKey) {
-      throw new LLMConfigurationError('OpenRouter API key is required', 'openrouter');
-    }
-
-    const response = await this.httpClient.post(
-      `${this.baseUrl}/chat/completions`,
-      {
-        model: request.model,
-        messages: this.transformMessages(request.messages),
-        temperature: request.temperature,
-        max_tokens: request.max_tokens,
-        stream: true,
-      },
-      {
-        responseType: 'stream',
-      }
-    );
-
-    const stream = response.data;
-    
-    for await (const chunk of stream) {
-      const lines = chunk.toString().split('\n').filter((line: string) => line.trim() !== '');
-      
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          const data = line.slice(6);
-          if (data === '[DONE]') return;
-          
-          try {
-            const parsed = JSON.parse(data);
-            yield parsed;
-          } catch (e) {
-            // Skip invalid JSON
-          }
-        }
-      }
-    }
+    throw new Error('Streaming responses are currently disabled. Use executePrompt instead for full completion responses.');
   }
 
   async getAvailableModels(): Promise<LLMModelInfo[]> {
