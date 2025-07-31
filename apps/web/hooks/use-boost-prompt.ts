@@ -13,15 +13,13 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 interface UseBoostPromptProps {
   setPrompt: (prompt: string) => void;
-  setSelectedProviders: (providers: any[]) => void;
 }
 
 export function useBoostPrompt({
   setPrompt,
-  setSelectedProviders,
 }: UseBoostPromptProps) {
   const [isBoosting, setIsBoosting] = useState(false);
-  const { openRouterApiKey, isConfigured, passphrase, setPassphrase } = useApiConfig();
+  const { openRouterApiKey, isConfigured } = useApiConfig();
 
   // Memoize the provider lookup
   const openRouterProvider = useMemo(() =>
@@ -97,7 +95,6 @@ export function useBoostPrompt({
 
         // Update UI in the next tick to keep it responsive
         await new Promise(resolve => setTimeout(resolve, 0));
-        setSelectedProviders([openRouterProvider]);
 
         // Execute the prompt
         const response = await llmClient.executePrompt({
@@ -122,7 +119,7 @@ export function useBoostPrompt({
         setIsBoosting(false);
       }
     }
-  }, [llmClient, openRouterProvider, isConfigured.openrouter, setPrompt, setSelectedProviders, getCacheKey]);
+  }, [llmClient, openRouterProvider, isConfigured.openrouter, setPrompt, getCacheKey]);
 
   return {
     boostPrompt,
