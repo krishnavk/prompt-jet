@@ -48,7 +48,7 @@ export function BoostControls({
               }
             }}
             placeholder="Select technique"
-            disabled={isBoosting}
+            disabled={isBoosting || isDisabled}
           />
           <Button
             onClick={onBoost}

@@ -91,13 +91,13 @@ export function PromptExecutor() {
         setBoostTechnique={setBoostTechnique}
         onBoost={() => boostPrompt(boostTechnique, prompt)}
         isBoosting={isBoosting}
-        isBoostDisabled={!isConfigured.openrouter || isExecuting}
+        isBoostDisabled={!isConfigured.openrouter ||!prompt.trim() || isExecuting}
         selectedProviders={selectedProviders}
         setSelectedProviders={setSelectedProviders}
         onExecute={handleExecutePrompt}
         isExecuting={isExecuting}
         isExecuteDisabled={
-          !prompt.trim() || selectedProviders.length === 0 || isExecuting
+          !prompt.trim() || !isConfigured.openrouter
         }
         prompt={prompt}
         availableProviders={AVAILABLE_PROVIDERS}
