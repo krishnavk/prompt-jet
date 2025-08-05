@@ -5,7 +5,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { SettingsButton } from '@/components/settings-button'
 
 // Get basePath from environment or set manually for GitHub Pages
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || (typeof window !== 'undefined' && window.location.pathname.startsWith('/prompt-jet') ? '/prompt-jet' : '');
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || (typeof window !== 'undefined' && window.location.pathname.startsWith('/prompt-jet') ? '' : '/prompt-jet');
 
 export function Header() {
   return (
