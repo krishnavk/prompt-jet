@@ -6,6 +6,9 @@ export const getBoostTemplate = (technique: string, promptText: string): string 
 1. Start with "Let's think step by step."
 2. Use numbered, logical steps.
 3. Be concise; end with a final answer.
+4. Only output a prompt that would score 100 for effectiveness and efficiency.
+5. At the end, output a line: Boost Score: 100
+6. Do NOT output anything unless the boost score is 100.
 
 Format:
 - Numbered list
@@ -13,7 +16,12 @@ Format:
 
 <original_prompt>
 ${promptText}
-</original_prompt>`;
+</original_prompt>
+
+Enhanced Prompt:
+[Your improved prompt here]
+
+Boost Score: 100`;
 
     case "role":
       return `You are a prompt engineer. Modify the prompt to assign a relevant expert role.
@@ -21,6 +29,9 @@ ${promptText}
 1. Define an expert persona.
 2. Add domain context.
 3. Make it task-specific and clear.
+4. Only output a prompt that would score 100 for effectiveness and efficiency.
+5. At the end, output a line: Boost Score: 100
+6. Do NOT output anything unless the boost score is 100.
 
 Format:
 - Role statement
@@ -28,27 +39,42 @@ Format:
 
 <original_prompt>
 ${promptText}
-</original_prompt>`;
+</original_prompt>
+
+Enhanced Prompt:
+[Your improved prompt here]
+
+Boost Score: 100`;
 
     case "constraints":
       return `Add clear constraints to the prompt.
 
 1. Define limits (e.g., format, length, exclusions).
 2. Be specific and brief.
+3. Only output a prompt that would score 100 for effectiveness and efficiency.
+4. At the end, output a line: Boost Score: 100
+5. Do NOT output anything unless the boost score is 100.
 
 Format:
 - Bullet list of constraints
-- Revised prompt
 
 <original_prompt>
 ${promptText}
-</original_prompt>`;
+</original_prompt>
+
+Enhanced Prompt:
+[Your improved prompt here]
+
+Boost Score: 100`;
 
     case "examples":
       return `Improve the prompt by adding 2–3 concise examples.
 
 1. Include both input and output.
 2. Match desired format and tone.
+3. Only output a prompt that would score 100 for effectiveness and efficiency.
+4. At the end, output a line: Boost Score: 100
+5. Do NOT output anything unless the boost score is 100.
 
 Format:
 - Examples first
@@ -56,7 +82,12 @@ Format:
 
 <original_prompt>
 ${promptText}
-</original_prompt>`;
+</original_prompt>
+
+Enhanced Prompt:
+[Your improved prompt here]
+
+Boost Score: 100`;
 
     case "meta":
       return `Make the prompt guide AI to self-evaluate and improve.
@@ -64,19 +95,30 @@ ${promptText}
 1. Add review and refinement steps.
 2. Include quality checks.
 3. Be brief and focused.
+4. Only output a prompt that would score 100 for effectiveness and efficiency.
+5. At the end, output a line: Boost Score: 100
+6. Do NOT output anything unless the boost score is 100.
 
 Format:
 - Meta-prompt with eval and improvement steps
 
 <original_prompt>
 ${promptText}
-</original_prompt>`;
+</original_prompt>
+
+Enhanced Prompt:
+[Your improved prompt here]
+
+Boost Score: 100`;
 
     case "contextual":
       return `Add minimal but relevant context.
 
 1. Include background, audience, and use case.
 2. Be concise and actionable.
+3. Only output a prompt that would score 100 for effectiveness and efficiency.
+4. At the end, output a line: Boost Score: 100
+5. Do NOT output anything unless the boost score is 100.
 
 Format:
 - Context first
@@ -84,13 +126,21 @@ Format:
 
 <original_prompt>
 ${promptText}
-</original_prompt>`;
+</original_prompt>
+
+Enhanced Prompt:
+[Your improved prompt here]
+
+Boost Score: 100`;
 
     case "tot":
       return `Rewrite the prompt to explore multiple reasoning paths.
 
 1. Create 3–4 solution branches.
 2. Add compare + synthesize step.
+3. Only output a prompt that would score 100 for effectiveness and efficiency.
+4. At the end, output a line: Boost Score: 100
+5. Do NOT output anything unless the boost score is 100.
 
 Format:
 - Numbered paths
@@ -98,7 +148,12 @@ Format:
 
 <original_prompt>
 ${promptText}
-</original_prompt>`;
+</original_prompt>
+
+Enhanced Prompt:
+[Your improved prompt here]
+
+Boost Score: 100`;
 
     case "generated":
       return `Require AI to generate and verify facts before answering.
@@ -211,6 +266,9 @@ ${promptText}
 1. Generate.
 2. Critique.
 3. Revise.
+4. Only output a prompt that would score 100 for effectiveness and efficiency.
+5. At the end, output a line: Boost Score: 100
+6. Do NOT output anything unless the boost score is 100.
 
 Format:
 - Initial answer
@@ -219,21 +277,30 @@ Format:
 
 <original_prompt>
 ${promptText}
-</original_prompt>`;
+</original_prompt>
+
+Enhanced Prompt:
+[Your improved prompt here]
+
+Boost Score: 100`;
 
     case "enhance":
     default:
       return `Make this prompt clearer and more useful.
 
-1. Clarify goal.
-2. Add steps, format, and limits.
-3. Cut fluff.
+1. Clarify the goal, add steps, format, and limits, and cut fluff.
+2. Only output an enhanced prompt that is maximally effective and efficient for an LLM.
+3. At the end, output a line: Boost Score: 100
+4. Do NOT output anything unless the boost score is 100.
 
 Format:
-- Enhanced prompt only
-
 <original_prompt>
 ${promptText}
-</original_prompt>`;
+</original_prompt>
+
+Enhanced Prompt:
+[Your improved prompt here]
+
+Boost Score: 100`;
   }
 };

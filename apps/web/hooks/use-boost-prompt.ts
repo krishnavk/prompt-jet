@@ -72,14 +72,14 @@ export function useBoostPrompt({
     // Use requestIdleCallback to prevent blocking the main thread
     if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
       window.requestIdleCallback(async () => {
-        await processBoost();
+        await processBoost(0);
       }, { timeout: 1000 });
     } else {
       // Fallback for browsers that don't support requestIdleCallback
-      setTimeout(processBoost, 0);
+      setTimeout(() => processBoost(0), 0);
     }
 
-    async function processBoost() {
+    async function processBoost(retryCount = 0) {
       try {
         if (!llmClient) {
           console.error('LLM client is not initialized');
@@ -106,12 +106,27 @@ export function useBoostPrompt({
 
         if (response.choices?.[0]?.message?.content) {
           const result = response.choices[0].message.content;
-          // Cache the result
-          promptCache.set(cacheKey, result);
-          // Set cache expiration
-          setTimeout(() => promptCache.delete(cacheKey), CACHE_TTL);
-          // Update the prompt
-          setPrompt(result);
+          // Parse Boost Score from result
+          const scoreMatch = result.match(/Boost Score:\s*(\d+)/i);
+          const score = scoreMatch ? parseInt(scoreMatch[1], 10) : null;
+          if (score === 100) {
+            // Cache the result
+            promptCache.set(cacheKey, result);
+            // Set cache expiration
+            setTimeout(() => promptCache.delete(cacheKey), CACHE_TTL);
+            // Extract only the Enhanced Prompt section
+            const enhancedMatch = result.match(/Enhanced Prompt:\s*([\s\S]*?)\n?Boost Score:/i);
+            const enhancedOnly = enhancedMatch ? enhancedMatch[1].trim() : result;
+            setPrompt(enhancedOnly);
+          } else {
+            retryCount++;
+            if (retryCount < 3) {
+              console.warn(`Boost score was not 100 (got ${score}). Retrying... [Attempt ${retryCount}]`);
+              await processBoost(retryCount);
+            } else {
+              console.error('Failed to generate a boost prompt with score 100 after 3 attempts. No boost applied.');
+            }
+          }
         }
       } catch (error) {
         console.error("Boost failed:", error);
